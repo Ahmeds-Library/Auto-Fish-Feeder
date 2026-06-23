@@ -1,0 +1,215 @@
+{
+  "users": {
+    "USER_UID": {
+      "name": "Demo Aquarist",
+      "email": "user@example.com",
+      "createdAt": 1719123000000,
+      "devices": {
+        "FF-001": true,
+        "FF-002": true
+      }
+    }
+  },
+  "devices": {
+    "FF-001": {
+      "ownerUid": "USER_UID",
+      "deviceAuthUid": "DEVICE_AUTH_UID_001",
+      "name": "Home Aquarium",
+      "pairing": {
+        "paired": true,
+        "pairingCodeHash": "demo-hash-not-a-real-code",
+        "pairedAt": 1719123000000
+      },
+      "status": {
+        "online": true,
+        "lastSeen": 1719123600000,
+        "firmwareVersion": "1.0.0-phase2-pending",
+        "wifi": {
+          "connected": true,
+          "rssi": -55
+        },
+        "firebase": {
+          "connected": true,
+          "lastError": ""
+        },
+        "motor": {
+          "state": "idle",
+          "lastRunAt": 1719123000000,
+          "lastRunDurationMs": 700
+        },
+        "feeding": {
+          "todayCount": 2,
+          "lastFeedAt": 1719123000000,
+          "lastFeedStatus": "completed"
+        },
+        "lastError": ""
+      },
+      "settings": {
+        "motorType": "continuous360",
+        "servoPin": "D4",
+        "timezoneOffsetSeconds": 18000,
+        "safety": {
+          "maxRunMs": 10000,
+          "emergencyStopEnabled": true
+        },
+        "continuous360": {
+          "cwValue": 0,
+          "ccwValue": 180,
+          "stopValue": 90,
+          "defaultDirection": "cw",
+          "defaultDurationMs": 700
+        },
+        "positional": {
+          "minAngle": 0,
+          "maxAngle": 180,
+          "restAngle": 90,
+          "feedAngle": 0,
+          "returnAfterFeed": true,
+          "holdMs": 700
+        }
+      },
+      "commands": {
+        "active": {
+          "id": "CMD_SAMPLE",
+          "type": "feed",
+          "status": "completed",
+          "createdAt": 1719123000000,
+          "createdBy": "USER_UID",
+          "payload": {
+            "motorType": "continuous360",
+            "direction": "cw",
+            "durationMs": 700,
+            "source": "manual"
+          }
+        }
+      },
+      "schedules": {
+        "morning": {
+          "enabled": true,
+          "time": "08:00",
+          "days": [
+            "mon",
+            "tue",
+            "wed",
+            "thu",
+            "fri",
+            "sat",
+            "sun"
+          ],
+          "feedMode": "medium",
+          "motorType": "continuous360",
+          "direction": "cw",
+          "durationMs": 700,
+          "lastTriggeredKey": ""
+        }
+      },
+      "logs": {
+        "l1": {
+          "level": "info",
+          "message": "Device heartbeat received",
+          "createdAt": 1719122500000,
+          "source": "device"
+        },
+        "l2": {
+          "level": "success",
+          "message": "Manual feeding completed",
+          "createdAt": 1719123000000,
+          "source": "device"
+        },
+        "l3": {
+          "level": "command",
+          "message": "Feed command acknowledged",
+          "createdAt": 1719122990000,
+          "source": "device"
+        }
+      }
+    },
+    "FF-002": {
+      "ownerUid": "USER_UID",
+      "deviceAuthUid": "DEVICE_AUTH_UID_002",
+      "name": "Office Nano Tank",
+      "pairing": {
+        "paired": true,
+        "pairingCodeHash": "demo-hash-not-a-real-code-2",
+        "pairedAt": 1719123100000
+      },
+      "status": {
+        "online": false,
+        "lastSeen": 1719020000000,
+        "firmwareVersion": "1.0.0-phase2-pending",
+        "wifi": {
+          "connected": false,
+          "rssi": -80
+        },
+        "firebase": {
+          "connected": false,
+          "lastError": "offline"
+        },
+        "motor": {
+          "state": "idle",
+          "lastRunAt": 0,
+          "lastRunDurationMs": 0
+        },
+        "feeding": {
+          "todayCount": 0,
+          "lastFeedAt": 0,
+          "lastFeedStatus": "idle"
+        },
+        "lastError": "Offline since last heartbeat"
+      },
+      "settings": {
+        "motorType": "positional",
+        "servoPin": "D4",
+        "timezoneOffsetSeconds": 0,
+        "safety": {
+          "maxRunMs": 10000,
+          "emergencyStopEnabled": true
+        },
+        "continuous360": {
+          "cwValue": 0,
+          "ccwValue": 180,
+          "stopValue": 90,
+          "defaultDirection": "cw",
+          "defaultDurationMs": 700
+        },
+        "positional": {
+          "minAngle": 0,
+          "maxAngle": 180,
+          "restAngle": 90,
+          "feedAngle": 25,
+          "returnAfterFeed": true,
+          "holdMs": 800
+        }
+      },
+      "commands": {
+        "active": {
+          "id": "",
+          "type": "none",
+          "status": "idle",
+          "createdAt": 0,
+          "createdBy": "",
+          "payload": {}
+        }
+      },
+      "schedules": {},
+      "logs": {
+        "l1": {
+          "level": "warning",
+          "message": "Waiting for Phase 2 firmware heartbeat",
+          "createdAt": 1719122000000,
+          "source": "system"
+        }
+      }
+    }
+  },
+  "pairingRequests": {
+    "483921": {
+      "deviceId": "FF-A84F21",
+      "deviceName": "Fish Feeder FF-A84F21",
+      "createdAt": 1719123000000,
+      "expiresAt": 1719123900000,
+      "claimed": false,
+      "source": "device"
+    }
+  }
+}

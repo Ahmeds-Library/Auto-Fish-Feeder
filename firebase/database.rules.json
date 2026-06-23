@@ -1,0 +1,120 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "users": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid",
+        "devices": {
+          "$deviceId": {
+            ".validate": "newData.isBoolean()"
+          }
+        }
+      }
+    },
+    "devices": {
+      "$deviceId": {
+        ".read": "auth != null && (data.child('ownerUid').val() === auth.uid || data.child('deviceAuthUid').val() === auth.uid)",
+        "name": {
+          ".write": "auth != null && data.parent().child('ownerUid').val() === auth.uid",
+          ".validate": "newData.isString() && newData.val().length <= 80"
+        },
+        "commands": {
+          "active": {
+            ".write": "auth != null && (data.parent().parent().child('ownerUid').val() === auth.uid || data.parent().parent().child('deviceAuthUid').val() === auth.uid)",
+            "status": {
+              ".validate": "newData.val() in ['idle','pending','running','completed','failed']"
+            },
+            "type": {
+              ".validate": "newData.val() in ['none','feed','test_motor','emergency_stop','sync_settings','factory_reset']"
+            },
+            "$other": {
+              ".validate": true
+            }
+          }
+        },
+        "schedules": {
+          "$sid": {
+            ".write": "auth != null && data.parent().parent().child('ownerUid').val() === auth.uid",
+            "durationMs": {
+              ".validate": "newData.isNumber() && newData.val() >= 100 && newData.val() <= 10000"
+            },
+            "$other": {
+              ".validate": true
+            }
+          }
+        },
+        "settings": {
+          ".write": "auth != null && data.parent().child('ownerUid').val() === auth.uid",
+          "motorType": {
+            ".validate": "newData.val() in ['continuous360','positional']"
+          },
+          "continuous360": {
+            "$k": {
+              ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 10000 || newData.val() in ['cw','ccw']"
+            }
+          },
+          "positional": {
+            "$k": {
+              ".validate": "newData.isBoolean() || (newData.isNumber() && newData.val() >= 0 && newData.val() <= 10000)"
+            }
+          },
+          "$other": {
+            ".validate": true
+          }
+        },
+        "status": {
+          ".write": "auth != null && data.parent().child('deviceAuthUid').val() === auth.uid"
+        },
+        "logs": {
+          "$logId": {
+            ".write": "auth != null && data.parent().parent().child('deviceAuthUid').val() === auth.uid",
+            "level": {
+              ".validate": "newData.val() in ['info','success','warning','error','command']"
+            },
+            "$other": {
+              ".validate": true
+            }
+          }
+        },
+        "ownerUid": {
+          ".write": false
+        },
+        "deviceAuthUid": {
+          ".write": false
+        },
+        "$other": {
+          ".write": false
+        }
+      }
+    },
+    "pairingRequests": {
+      "$code": {
+        ".read": false,
+        ".write": "auth != null && (!data.exists() || data.child('deviceId').val() === newData.child('deviceId').val()) && newData.child('deviceId').isString() && root.child('devices').child(newData.child('deviceId').val()).child('deviceAuthUid').val() === auth.uid",
+        "deviceId": {
+          ".validate": "newData.isString() && newData.val().matches(/^FF-[A-Z0-9-]{3,32}$/)"
+        },
+        "deviceName": {
+          ".validate": "newData.isString() && newData.val().length <= 80"
+        },
+        "createdAt": {
+          ".validate": "newData.isNumber()"
+        },
+        "expiresAt": {
+          ".validate": "newData.isNumber()"
+        },
+        "claimed": {
+          ".validate": "newData.isBoolean()"
+        },
+        "source": {
+          ".validate": "newData.val() === 'device'"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    }
+  }
+}
