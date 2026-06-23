@@ -58,7 +58,7 @@ body::before {
   }
 
   .btn {
-    @apply rounded-2xl px-4 py-3 font-semibold transition duration-200 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0;
+    @apply rounded-2xl px-4 py-3 font-semibold transition duration-200 hover:-translate-y-0.5 active:translate-y-0 focus:outline-none focus:ring-4 focus:ring-cyan-300/25 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0;
   }
 
   .btn-primary {
@@ -125,21 +125,21 @@ body::before {
   }
 
   .section-title {
-    font-size: clamp(1.35rem, 2.5vw, 2rem);
+    font-size: clamp(1.35rem, 2.6vw, 2rem);
     line-height: 1.1;
     letter-spacing: -0.03em;
     font-weight: 900;
   }
 
   .display-title {
-    font-size: clamp(2.4rem, 6vw, 5.5rem);
+    font-size: clamp(2.6rem, 6vw, 5.8rem);
     line-height: 1.05;
     letter-spacing: -0.04em;
     font-weight: 900;
   }
 
   .page-heading {
-    font-size: clamp(1.8rem, 4vw, 3.2rem);
+    font-size: clamp(2rem, 4vw, 3.3rem);
     line-height: 1.1;
     letter-spacing: -0.035em;
     font-weight: 900;

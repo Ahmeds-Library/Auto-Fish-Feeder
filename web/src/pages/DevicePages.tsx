@@ -1,7 +1,7 @@
 import { FormEvent, ReactNode, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { DeviceNav, PageTitle } from '../components/Layout';
-import { AlertMessage, EmptyState, GlassCard, MetricCard, StatusBadge } from '../components/ui';
+import { AlertMessage, EmptyState, GlassCard, MetricCard, StatusBadge, TimelineItem } from '../components/ui';
 import { useAuth } from '../hooks/useAuth';
 import { useDevice } from '../hooks/useDevice';
 import { isOnline, timeAgo } from '../lib/format';
@@ -12,7 +12,7 @@ import {
   updateDeviceSettings,
 } from '../services/deviceService';
 import { DeviceLog, Schedule } from '../types/schema';
-import { Activity, AlertTriangle, CalendarClock, Clock, Fish, Gauge, Radio, Settings, SlidersHorizontal } from 'lucide-react';
+import { Activity, AlertTriangle, CalendarClock, Clock, Fish, Gauge, Radio } from 'lucide-react';
 
 function useDeviceId() {
   const params = useParams();
@@ -265,19 +265,25 @@ export function MotorSettingsPage() {
 export function LogsPage() {
   const deviceId = useDeviceId();
   const device = useDevice(deviceId);
-  const logs = (Object.entries(device?.logs ?? {}) as [string, DeviceLog][]).slice(-100).reverse();
+  const [level, setLevel] = useState<'all' | DeviceLog['level']>('all');
+  const logs = (Object.entries(device?.logs ?? {}) as [string, DeviceLog][])
+    .filter(([, log]) => level === 'all' || log.level === level)
+    .slice(-100)
+    .reverse();
 
   return (
     <Shell title="Logs">
+      <div className="mb-5 flex gap-2 overflow-x-auto rounded-3xl border border-white/10 bg-white/[0.04] p-2">
+        {(['all', 'info', 'success', 'warning', 'error', 'command'] as const).map((item) => (
+          <button key={item} className={level === item ? 'navlink navlink-active whitespace-nowrap' : 'navlink whitespace-nowrap'} onClick={() => setLevel(item)} type="button">{item}</button>
+        ))}
+      </div>
       <div className="space-y-3">
         {logs.length ? (
           logs.map(([logId, log], index) => (
-            <GlassCard className="stagger-item relative ml-4 border-l-2 border-l-cyan-300/30" style={{ animationDelay: `${index * 45}ms` }} key={logId}>
-              <span className="absolute -left-[9px] top-7 h-4 w-4 rounded-full bg-cyan-300 shadow-glow" />
-              <StatusBadge tone={log.level === 'error' ? 'danger' : log.level === 'warning' ? 'warning' : log.level === 'success' ? 'success' : 'info'}>{log.level}</StatusBadge>
-              <p className="mt-3 font-semibold text-white">{log.message}</p>
-              <p className="text-sm text-slate-400">{timeAgo(log.createdAt)} • {log.source}</p>
-            </GlassCard>
+            <TimelineItem key={logId} title={log.level} tone={log.level === 'error' ? 'danger' : log.level === 'warning' ? 'warning' : log.level === 'success' ? 'success' : 'info'} meta={`${timeAgo(log.createdAt)} • ${log.source}`} delay={index * 45}>
+              {log.message}
+            </TimelineItem>
           ))
         ) : (
           <EmptyState icon={Clock} title="No logs yet" body="Device and command events will appear here as a live timeline." />
@@ -307,7 +313,14 @@ export function DeviceSettingsPage() {
           <InfoRow label="Owner UID" value={device?.ownerUid || 'Not paired'} />
           <InfoRow label="Firmware" value={device?.status.firmwareVersion || 'Unknown'} />
         </GlassCard>
-        <GlassCard className="space-y-4 border-rose-300/20 bg-rose-500/10">
+        <GlassCard className="space-y-4">
+          <p className="badge-info w-fit">Safety</p>
+          <h2 className="section-title mt-3">Runtime guardrails</h2>
+          <InfoRow label="Timezone offset" value={`${device?.settings.timezoneOffsetSeconds ?? 0} seconds`} />
+          <InfoRow label="Max motor run" value={`${device?.settings.safety.maxRunMs ?? 0} ms`} />
+          <InfoRow label="Emergency stop" value={device?.settings.safety.emergencyStopEnabled ? 'Enabled' : 'Disabled'} />
+        </GlassCard>
+        <GlassCard className="space-y-4 border-rose-300/20 bg-rose-500/10 lg:col-span-2">
           <AlertTriangle className="text-rose-200" />
           <h2 className="section-title">Danger zone</h2>
           <p className="text-sm leading-6 text-rose-100">Unlink, cloud reset, and factory reset require confirmation and firmware support. Keep destructive actions behind an explicit confirmation flow.</p>

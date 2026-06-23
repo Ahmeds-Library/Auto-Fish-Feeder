@@ -46,6 +46,7 @@ export function DeviceCard({ device }: { device: DeviceWithId }) {
       </div>
 
       <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-300">
+        <span className="rounded-full bg-white/10 px-3 py-1">Last seen: {timeAgo(device.status?.lastSeen)}</span>
         <span className="rounded-full bg-white/10 px-3 py-1">Motor: {device.status?.motor?.state || 'unknown'}</span>
         <span className="rounded-full bg-white/10 px-3 py-1"><Radio className="mr-1 inline" size={13} /> {signalLabel(rssi)} {typeof rssi === 'number' ? `(${rssi} dBm)` : ''}</span>
       </div>
@@ -55,6 +56,11 @@ export function DeviceCard({ device }: { device: DeviceWithId }) {
           <AlertTriangle className="shrink-0" size={17} /> {device.status.lastError}
         </p>
       )}
+
+      <div className="mt-5 flex items-center justify-between border-t border-white/10 pt-4 text-sm text-cyan-200">
+        <span>Open device</span>
+        <span className="transition group-hover:translate-x-1">→</span>
+      </div>
     </Link>
   );
 }

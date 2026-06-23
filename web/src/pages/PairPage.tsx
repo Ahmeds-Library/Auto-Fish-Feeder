@@ -114,6 +114,21 @@ export function PairPage() {
             </div>
           </div>
 
+
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="card">
+              <p className="text-xs font-black uppercase tracking-[0.24em] text-cyan-300">Setup Wi-Fi</p>
+              <h3 className="mt-3 text-xl font-black">FishFeeder-Setup</h3>
+              <p className="mt-2 text-sm text-slate-300">Password: <b className="text-cyan-100">setup1234</b></p>
+            </div>
+            <div className="card">
+              <p className="text-xs font-black uppercase tracking-[0.24em] text-cyan-300">Setup portal</p>
+              <h3 className="mt-3 text-xl font-black">http://192.168.4.1</h3>
+              <p className="mt-2 text-sm text-slate-300">Enter Wi-Fi, Firebase, and motor settings before claiming.</p>
+            </div>
+          </div>
+
           {pairingLinkDetected && (
             <p className="rounded-3xl border border-cyan-300/20 bg-cyan-400/10 p-4 text-cyan-100">
               Pairing link detected. Device ID and pairing code were prefilled from the URL.

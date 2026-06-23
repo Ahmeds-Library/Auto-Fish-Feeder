@@ -1,8 +1,8 @@
-import { Activity, CalendarClock, Fish, ShieldCheck } from 'lucide-react';
+import { Activity, AlertTriangle, CalendarClock, Fish, ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { DeviceCard } from '../components/DeviceCard';
 import { PageTitle } from '../components/Layout';
-import { EmptyState, MetricCard } from '../components/ui';
+import { EmptyState, MetricCard, TimelineItem } from '../components/ui';
 import { useAuth } from '../hooks/useAuth';
 import { useUserDevices } from '../hooks/useUserDevices';
 import { isOnline } from '../lib/format';
@@ -12,6 +12,11 @@ export function Dashboard() {
   const { devices, loading } = useUserDevices(user?.uid);
   const onlineCount = devices.filter((device) => isOnline(device.status?.lastSeen)).length;
   const todayFeeds = devices.reduce((sum, device) => sum + (device.status?.feeding?.todayCount ?? 0), 0);
+  const alertCount = devices.filter((device) => Boolean(device.status?.lastError)).length;
+  const recentLogs = devices
+    .flatMap((device) => Object.values(device.logs ?? {}).map((log) => ({ ...log, deviceName: device.name })))
+    .sort((a, b) => b.createdAt - a.createdAt)
+    .slice(0, 3);
 
   return (
     <>
@@ -36,10 +41,11 @@ export function Dashboard() {
           </div>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-3 xl:grid-cols-1">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
           <MetricCard icon={Fish} label="Linked feeders" value={devices.length} helper="Visible to this account" delay={0} />
           <MetricCard icon={Activity} label="Online now" value={onlineCount} helper="Based on last heartbeat" delay={80} />
           <MetricCard icon={CalendarClock} label="Feeds today" value={todayFeeds} helper="Across linked devices" delay={160} />
+          <MetricCard icon={AlertTriangle} label="Alerts" value={alertCount} helper="Devices reporting lastError" delay={240} />
         </div>
       </section>
 
@@ -58,6 +64,26 @@ export function Dashboard() {
           <CalendarClock className="text-blue-200" />
           <h3 className="mt-3 text-lg font-bold">Per-device schedules</h3>
           <p className="mt-2 text-sm leading-6 text-slate-300">Schedules live at `/devices/{'{deviceId}'}/schedules` for safe scaling.</p>
+        </div>
+      </section>
+
+
+
+      <section className="mb-6 grid gap-4 lg:grid-cols-[1fr_.85fr]">
+        <div className="card">
+          <p className="badge-info w-fit">Account security</p>
+          <h2 className="section-title mt-3">Only devices linked to your account are visible here.</h2>
+          <p className="mt-3 text-sm leading-6 text-slate-300">The dashboard reads your private user-device map and never broadcasts commands globally. Each feed action stays scoped to one feeder.</p>
+        </div>
+        <div className="card">
+          <p className="badge-info w-fit">Recent activity</p>
+          <div className="mt-4 space-y-3">
+            {recentLogs.length ? recentLogs.map((log, index) => (
+              <TimelineItem key={`${log.createdAt}-${index}`} title={log.level} tone={log.level === 'error' ? 'danger' : log.level === 'warning' ? 'warning' : log.level === 'success' ? 'success' : 'info'} meta={`${log.deviceName} • ${new Date(log.createdAt).toLocaleString()}`} delay={index * 80}>
+                {log.message}
+              </TimelineItem>
+            )) : <p className="text-sm text-slate-400">No recent device logs yet.</p>}
+          </div>
         </div>
       </section>
 

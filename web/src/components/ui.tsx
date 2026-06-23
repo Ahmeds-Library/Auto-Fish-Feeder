@@ -1,5 +1,5 @@
-import { AlertTriangle, CheckCircle2, Circle, Info, LucideIcon } from 'lucide-react';
-import { CSSProperties, ReactNode } from 'react';
+import { AlertTriangle, CheckCircle2, Circle, Info, LucideIcon, Loader2 } from 'lucide-react';
+import { CSSProperties, InputHTMLAttributes, ReactNode, SelectHTMLAttributes } from 'react';
 
 export function PageTransition({ children }: { children: ReactNode }) {
   return <div className="page-enter">{children}</div>;
@@ -61,5 +61,50 @@ export function AlertMessage({ tone = 'info', children }: { tone?: 'success' | '
     <p className={`flex gap-2 rounded-2xl border p-3 text-sm leading-6 ${classes[tone]}`}>
       <Icon className="mt-0.5 shrink-0" size={17} /> {children}
     </p>
+  );
+}
+
+export function PrimaryButton({ children, loading = false, className = '', ...props }: React.ButtonHTMLAttributes<HTMLButtonElement> & { loading?: boolean }) {
+  return <button className={`btn-primary inline-flex min-h-11 items-center justify-center gap-2 ${className}`} disabled={loading || props.disabled} {...props}>{loading && <Loader2 className="animate-spin" size={17} />}{children}</button>;
+}
+
+export function SecondaryButton({ children, className = '', ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  return <button className={`btn-ghost inline-flex min-h-11 items-center justify-center gap-2 ${className}`} {...props}>{children}</button>;
+}
+
+export function InputField({ label, icon: Icon, className = '', ...props }: InputHTMLAttributes<HTMLInputElement> & { label: string; icon?: LucideIcon }) {
+  return (
+    <label className="block space-y-2">
+      <span className="text-sm font-semibold text-slate-200">{label}</span>
+      <div className="relative">
+        {Icon && <Icon className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />}
+        <input className={`field ${Icon ? 'pl-11' : ''} ${className}`} {...props} />
+      </div>
+    </label>
+  );
+}
+
+export function SelectField({ label, children, className = '', ...props }: SelectHTMLAttributes<HTMLSelectElement> & { label: string; children: ReactNode }) {
+  return (
+    <label className="block space-y-2">
+      <span className="text-sm font-semibold text-slate-200">{label}</span>
+      <select className={`field ${className}`} {...props}>{children}</select>
+    </label>
+  );
+}
+
+export function LoadingState({ label = 'Loading aquarium cloud...' }: { label?: string }) {
+  return <GlassCard className="flex items-center gap-3 text-cyan-100"><Loader2 className="animate-spin" size={18} /> {label}</GlassCard>;
+}
+
+export function TimelineItem({ tone = 'info', title, meta, children, delay = 0 }: { tone?: 'success' | 'warning' | 'danger' | 'info'; title: string; meta?: string; children?: ReactNode; delay?: number }) {
+  const dot = tone === 'danger' ? 'bg-rose-300' : tone === 'warning' ? 'bg-amber-300' : tone === 'success' ? 'bg-emerald-300' : 'bg-cyan-300';
+  return (
+    <GlassCard className="stagger-item relative ml-4 border-l-2 border-l-cyan-300/30" style={{ animationDelay: `${delay}ms` }}>
+      <span className={`absolute -left-[9px] top-7 h-4 w-4 rounded-full ${dot} shadow-glow`} />
+      <StatusBadge tone={tone}>{title}</StatusBadge>
+      {children && <div className="mt-3 font-semibold text-white">{children}</div>}
+      {meta && <p className="mt-2 text-sm text-slate-400">{meta}</p>}
+    </GlassCard>
   );
 }
