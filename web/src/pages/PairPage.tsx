@@ -1,7 +1,7 @@
 import { FirebaseError } from 'firebase/app';
 import { CheckCircle2, Copy, KeyRound, QrCode, Router, Smartphone, Wifi } from 'lucide-react';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { PageTitle } from '../components/Layout';
 import { AlertMessage } from '../components/ui';
 import { claimDevice } from '../services/pairingService';
@@ -46,6 +46,7 @@ const steps = [
 ];
 
 export function PairPage() {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [deviceId, setDeviceId] = useState(searchParams.get('deviceId') || '');
   const [pairingCode, setPairingCode] = useState(searchParams.get('code') || '');
@@ -72,7 +73,11 @@ export function PairPage() {
     setLoading(true);
     try {
       const result = await claimDevice({ deviceId, pairingCode });
-      setSuccess(result.message || `Device ${result.deviceId} paired successfully.`);
+      const claimedDeviceId = result.deviceId || deviceId;
+      setSuccess(result.message || `Device ${claimedDeviceId} paired successfully. Opening device overview...`);
+      window.setTimeout(() => {
+        navigate(claimedDeviceId ? `/devices/${claimedDeviceId}/overview` : '/devices');
+      }, 1000);
     } catch (err) {
       setError(claimErrorMessage(err));
     } finally {

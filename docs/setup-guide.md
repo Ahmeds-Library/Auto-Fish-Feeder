@@ -69,3 +69,17 @@ npm install
 npm run build
 firebase deploy --only functions,database,hosting
 ```
+
+## Phase 4 dashboard control setup
+
+After deploying the web app and database rules, verify these hardware-test controls before connecting a motor:
+
+1. Open a paired device and use **Feed Now**. Confirm `/devices/{deviceId}/commands/active/type` is `feed`.
+2. Use **Feed Test**. Confirm the command type is `test_motor` with a short duration payload.
+3. Use **Emergency Stop**. Confirm the command type is `emergency_stop` and the firmware marks the motor stopped.
+4. Save **Motor Settings** for continuous 360 and positional modes. The dashboard saves calibration values, hold/default durations, and `settings/safety/maxRunMs`, then sends `sync_settings`.
+5. Create schedules with enabled state, time, day chips, feed mode, motor type, direction, and duration. These records must live under `/devices/{deviceId}/schedules/{scheduleId}`.
+6. Pair a device through `/devices/pair`; after a successful `claimDevice` response, the app redirects to `/devices/{deviceId}/overview`.
+7. Check the Dashboard clock card. It is a React replacement for the old prototype clock, not the legacy jQuery clock.
+
+Do not flash or deploy files from `legacy/`. The old analog clock and prototype `/feednow` behavior are historical references only.

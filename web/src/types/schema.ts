@@ -1,9 +1,97 @@
-export type MotorType='continuous360'|'positional';export type Direction='cw'|'ccw';export type CommandStatus='idle'|'pending'|'running'|'completed'|'failed';export type LogLevel='info'|'success'|'warning'|'error'|'command';
-export interface AppUser{name:string;email:string;createdAt:number;devices?:Record<string,boolean>}
-export interface DeviceCommand{id:string;type:'none'|'feed'|'test'|'stop'|'factoryReset';status:CommandStatus;createdAt:number;createdBy:string;payload:Record<string,unknown>}
-export interface Schedule{enabled:boolean;time:string;days:string[];feedMode:'small'|'medium'|'large'|'custom';motorType?:MotorType;direction?:Direction;durationMs?:number;lastTriggeredKey?:string}
-export interface DeviceLog{level:LogLevel;message:string;createdAt:number;source:'web'|'device'|'system'}
-export interface Device{ownerUid:string;deviceAuthUid:string;name:string;pairing:{paired:boolean;pairingCodeHash:string;pairedAt:number};status:{online?:boolean;lastSeen:number;firmwareVersion:string;wifi:{connected:boolean;rssi:number};firebase:{connected:boolean;lastError:string};motor:{state:string;lastRunAt:number;lastRunDurationMs:number};feeding:{todayCount:number;lastFeedAt:number;lastFeedStatus:string};lastError:string};settings:{motorType:MotorType;servoPin:string;timezoneOffsetSeconds:number;safety:{maxRunMs:number;emergencyStopEnabled:boolean};continuous360:{cwValue:number;ccwValue:number;stopValue:number;defaultDirection:Direction;defaultDurationMs:number};positional:{minAngle:number;maxAngle:number;restAngle:number;feedAngle:number;returnAfterFeed:boolean;holdMs:number}};commands:{active:DeviceCommand};schedules?:Record<string,Schedule>;logs?:Record<string,DeviceLog>}
-export interface DeviceWithId extends Device{id:string}
+export type MotorType = 'continuous360' | 'positional';
+export type Direction = 'cw' | 'ccw';
+export type CommandStatus = 'idle' | 'pending' | 'running' | 'completed' | 'failed';
+export type CommandType = 'none' | 'feed' | 'test_motor' | 'emergency_stop' | 'sync_settings' | 'factory_reset';
+export type LogLevel = 'info' | 'success' | 'warning' | 'error' | 'command';
 
-export interface PairingRequest{deviceId:string;deviceName:string;createdAt:number;expiresAt:number;claimed:boolean;claimedBy?:string;source:'device'}
+export interface AppUser {
+  name: string;
+  email: string;
+  createdAt: number;
+  devices?: Record<string, boolean>;
+}
+
+export interface DeviceCommand {
+  id: string;
+  type: CommandType;
+  status: CommandStatus;
+  createdAt: number;
+  updatedAt?: number;
+  createdBy: string;
+  message?: string;
+  error?: string;
+  payload: Record<string, unknown>;
+}
+
+export interface Schedule {
+  enabled: boolean;
+  time: string;
+  days: string[];
+  feedMode: 'small' | 'medium' | 'large' | 'custom';
+  motorType: MotorType;
+  direction: Direction;
+  durationMs: number;
+  lastTriggeredKey?: string;
+}
+
+export interface DeviceLog {
+  level: LogLevel;
+  message: string;
+  createdAt: number;
+  source: 'web' | 'device' | 'system';
+}
+
+export interface Device {
+  ownerUid: string;
+  deviceAuthUid: string;
+  name: string;
+  pairing: { paired: boolean; pairingCodeHash: string; pairedAt: number };
+  status: {
+    online?: boolean;
+    lastSeen: number;
+    firmwareVersion: string;
+    wifi: { connected: boolean; rssi: number };
+    firebase: { connected: boolean; lastError: string };
+    motor: { state: string; lastRunAt: number; lastRunDurationMs: number };
+    feeding: { todayCount: number; lastFeedAt: number; lastFeedStatus: string };
+    lastError: string;
+  };
+  settings: {
+    motorType: MotorType;
+    servoPin: string;
+    timezoneOffsetSeconds: number;
+    safety: { maxRunMs: number; emergencyStopEnabled: boolean };
+    continuous360: {
+      cwValue: number;
+      ccwValue: number;
+      stopValue: number;
+      defaultDirection: Direction;
+      defaultDurationMs: number;
+    };
+    positional: {
+      minAngle: number;
+      maxAngle: number;
+      restAngle: number;
+      feedAngle: number;
+      returnAfterFeed: boolean;
+      holdMs: number;
+    };
+  };
+  commands: { active: DeviceCommand };
+  schedules?: Record<string, Schedule>;
+  logs?: Record<string, DeviceLog>;
+}
+
+export interface DeviceWithId extends Device {
+  id: string;
+}
+
+export interface PairingRequest {
+  deviceId: string;
+  deviceName: string;
+  createdAt: number;
+  expiresAt: number;
+  claimed: boolean;
+  claimedBy?: string;
+  source: 'device';
+}

@@ -35,3 +35,16 @@
 - Pair with an expired code and confirm the Cloud Function returns an expiry error.
 - Pair an already claimed device and confirm the Cloud Function rejects the claim.
 - Confirm normal users cannot directly write `/devices/{deviceId}/ownerUid`.
+
+## Phase 4 pre-hardware dashboard tests
+
+- Feed Now from `/devices/{deviceId}/feed` and confirm `commands/active/type` is `feed`.
+- Feed Test from `/devices/{deviceId}/feed` and confirm `commands/active/type` is `test_motor`.
+- Emergency Stop from `/devices/{deviceId}/feed` and confirm `commands/active/type` is `emergency_stop`.
+- Sync Settings and motor calibration save from `/devices/{deviceId}/motor-settings`; confirm continuous values, positional values, and `settings/safety/maxRunMs` are saved.
+- Validate motor settings client-side: angles/write values stay 0–180, durations stay 100–10000 ms, and positional feed/rest angles stay inside min/max.
+- Create, edit, toggle, and delete schedules with enabled/time/days/feedMode/motorType/direction/durationMs under `/devices/{deviceId}/schedules/{scheduleId}`.
+- Confirm successful pairing redirects to `/devices/{deviceId}/overview` after the Cloud Function returns success.
+- Confirm Dashboard shows the new React clock card and the old clock code is still only in `legacy/`.
+- Confirm the Active Command Status card appears on Overview and Feed pages with pending/running/completed/failed status tones.
+- Re-run the forbidden-path search and confirm active code does not use global `/feednow` or `/timers`.

@@ -1,5 +1,6 @@
 import { Activity, AlertTriangle, CalendarClock, Fish, ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { DashboardClock } from '../components/DashboardClock';
 import { DeviceCard } from '../components/DeviceCard';
 import { PageTitle } from '../components/Layout';
 import { EmptyState, MetricCard, TimelineItem } from '../components/ui';
@@ -49,7 +50,7 @@ export function Dashboard() {
         </div>
       </section>
 
-      <section className="mb-6 grid gap-4 md:grid-cols-3">
+      <section className="mb-6 grid gap-4 md:grid-cols-2 xl:grid-cols-[1fr_1fr_1fr_.95fr]">
         <div className="card">
           <ShieldCheck className="text-emerald-200" />
           <h3 className="mt-3 text-lg font-bold">Owner scoped</h3>
@@ -58,13 +59,14 @@ export function Dashboard() {
         <div className="card">
           <Activity className="text-cyan-200" />
           <h3 className="mt-3 text-lg font-bold">Live commands</h3>
-          <p className="mt-2 text-sm leading-6 text-slate-300">Feed actions write to one active command path for one selected feeder.</p>
+          <p className="mt-2 text-sm leading-6 text-slate-300">Feed, test motor, sync, and emergency stop commands write to one selected feeder.</p>
         </div>
         <div className="card">
           <CalendarClock className="text-blue-200" />
           <h3 className="mt-3 text-lg font-bold">Per-device schedules</h3>
           <p className="mt-2 text-sm leading-6 text-slate-300">Schedules live at `/devices/{'{deviceId}'}/schedules` for safe scaling.</p>
         </div>
+        <DashboardClock />
       </section>
 
 

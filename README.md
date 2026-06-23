@@ -80,3 +80,18 @@ Signup creates `/users/{uid}`, signs the user out, shows “Account created succ
 Device pairing uses the setup portal and Cloud Function flow. The browser cannot scan nearby Wi-Fi networks directly, so connect to the FishFeeder setup Wi-Fi manually, open `http://192.168.4.1`, then use the Device ID and 6-digit pairing code or pairing URL in `/devices/pair`.
 
 The `claimDevice` Cloud Function validates `/pairingRequests/{pairingCode}`, expiry, claim state, and current device ownership before linking the device to the logged-in user.
+
+## Phase 4 hardware-test controls
+
+The dashboard now includes the controls needed before live ESP8266 hardware testing:
+
+- **Feed Now** writes a `feed` command to `/devices/{deviceId}/commands/active`.
+- **Feed Test** writes a `test_motor` command for short motor verification.
+- **Emergency Stop** writes an `emergency_stop` command to the selected device only.
+- **Sync Settings** writes a `sync_settings` command after calibration changes.
+- **Motor calibration** saves continuous-servo write values, positional-servo angles, timing, and safety max runtime under `/devices/{deviceId}/settings`.
+- **Schedules** support enabled state, HH:MM time, day chips, feed mode, motor type, direction, and duration under `/devices/{deviceId}/schedules/{scheduleId}`.
+- **Pairing success** redirects to the claimed device overview after the Cloud Function confirms ownership.
+- **Dashboard clock** restores the old prototype clock idea as a new React glass card. The original analog clock remains historical code only under `legacy/`.
+
+Before flashing hardware, verify Feed Now, Feed Test, Emergency Stop, Sync Settings, schedule CRUD, and command status updates against a seeded or real device record.
