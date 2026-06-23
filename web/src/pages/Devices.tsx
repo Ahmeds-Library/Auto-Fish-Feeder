@@ -2,6 +2,7 @@ import { Fish, PlusCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { DeviceCard } from '../components/DeviceCard';
 import { PageTitle } from '../components/Layout';
+import { EmptyState } from '../components/ui';
 import { useAuth } from '../hooks/useAuth';
 import { useUserDevices } from '../hooks/useUserDevices';
 
@@ -27,12 +28,12 @@ export function DevicesPage() {
           {devices.map((device) => <DeviceCard key={device.id} device={device} />)}
         </div>
       ) : (
-        <div className="card text-center">
-          <Fish className="mx-auto text-cyan-200" size={52} />
-          <h2 className="mt-4 text-2xl font-black">Your fleet is empty</h2>
-          <p className="mx-auto mt-2 max-w-xl text-slate-300">Use the guided pairing flow after configuring your ESP8266 through the local setup portal.</p>
-          <Link className="btn-primary mt-5 inline-block" to="/devices/pair">Pair your first feeder</Link>
-        </div>
+        <EmptyState
+          icon={Fish}
+          title="Your fleet is empty"
+          body="Use the guided pairing flow after configuring your ESP8266 through the local setup portal."
+          action={<Link className="btn-primary mt-5 inline-block" to="/devices/pair">Pair your first feeder</Link>}
+        />
       )}
     </>
   );

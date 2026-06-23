@@ -3,6 +3,7 @@ import { CheckCircle2, Copy, KeyRound, QrCode, Router, Smartphone, Wifi } from '
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { PageTitle } from '../components/Layout';
+import { AlertMessage } from '../components/ui';
 import { claimDevice } from '../services/pairingService';
 
 function claimErrorMessage(error: unknown) {
@@ -133,8 +134,8 @@ export function PairPage() {
             <span className="grid h-12 w-12 place-items-center rounded-2xl bg-cyan-300/15 text-cyan-100 ring-1 ring-cyan-300/20"><KeyRound /></span>
           </div>
 
-          {success && <p className="rounded-2xl border border-emerald-300/20 bg-emerald-400/10 p-3 text-emerald-100">{success}</p>}
-          {error && <p className="rounded-2xl border border-rose-300/20 bg-rose-500/10 p-3 text-rose-200">{error}</p>}
+          {success && <AlertMessage tone="success">{success}</AlertMessage>}
+          {error && <AlertMessage tone="danger">{error}</AlertMessage>}
 
           <label className="block space-y-2">
             <span className="text-sm font-semibold text-slate-200">Device ID</span>

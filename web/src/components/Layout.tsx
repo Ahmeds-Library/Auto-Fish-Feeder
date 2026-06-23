@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { NavLink, Outlet } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { PageTransition } from './ui';
 
 const nav = [
   { to: '/dashboard', label: 'Dashboard', icon: Home },
@@ -83,7 +84,7 @@ export function Layout() {
           </div>
         </header>
         <div className="mx-auto max-w-7xl p-4 sm:p-8">
-          <Outlet />
+          <PageTransition><Outlet /></PageTransition>
         </div>
       </main>
 
@@ -118,7 +119,7 @@ export function PageTitle({ title, subtitle }: { title: string; subtitle?: strin
       <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
         <div>
           <p className="text-sm font-bold uppercase tracking-[0.3em] text-cyan-300">FishFeeder</p>
-          <h1 className="mt-3 max-w-4xl text-3xl font-black tracking-tight sm:text-5xl">{title}</h1>
+          <h1 className="page-heading mt-3 max-w-4xl">{title}</h1>
           {subtitle && <p className="mt-3 max-w-3xl text-base leading-7 text-slate-300">{subtitle}</p>}
         </div>
         <div className="flex items-center gap-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-4 py-2 text-sm text-cyan-100">

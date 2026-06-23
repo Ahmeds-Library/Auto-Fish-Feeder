@@ -110,3 +110,59 @@ body::before {
     @apply absolute -right-10 -top-10 h-28 w-28 rounded-full bg-cyan-300/10 blur-2xl;
   }
 }
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-gradient-to-r from-cyan-200 via-sky-200 to-emerald-200 bg-clip-text text-transparent;
+  }
+
+  .page-enter {
+    animation: fade-up 450ms cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
+
+  .stagger-item {
+    animation: fade-up 450ms cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
+
+  .section-title {
+    font-size: clamp(1.35rem, 2.5vw, 2rem);
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    font-weight: 900;
+  }
+
+  .display-title {
+    font-size: clamp(2.4rem, 6vw, 5.5rem);
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+    font-weight: 900;
+  }
+
+  .page-heading {
+    font-size: clamp(1.8rem, 4vw, 3.2rem);
+    line-height: 1.1;
+    letter-spacing: -0.035em;
+    font-weight: 900;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

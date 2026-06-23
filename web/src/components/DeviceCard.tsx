@@ -1,6 +1,7 @@
 import { AlertTriangle, Clock, Fish, Radio, Utensils } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { isOnline, timeAgo } from '../lib/format';
+import { DeviceStatusPulse, StatusBadge } from './ui';
 import { DeviceWithId } from '../types/schema';
 
 function signalLabel(rssi?: number) {
@@ -27,10 +28,10 @@ export function DeviceCard({ device }: { device: DeviceWithId }) {
             <p className="mt-1 text-sm text-slate-400">{device.id}</p>
           </div>
         </div>
-        <span className={online ? 'badge-ok' : 'badge-warn'}>
-          <span className={`h-2 w-2 rounded-full ${online ? 'bg-emerald-300 shadow-[0_0_12px_rgba(110,231,183,.9)]' : 'bg-amber-300'}`} />
+        <StatusBadge tone={online ? 'success' : 'warning'}>
+          <DeviceStatusPulse online={online} />
           {online ? 'online' : 'offline'}
-        </span>
+        </StatusBadge>
       </div>
 
       <div className="mt-6 grid grid-cols-2 gap-3 text-sm">

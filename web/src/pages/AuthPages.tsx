@@ -6,33 +6,12 @@ import {
   signOut,
   updateProfile,
 } from 'firebase/auth';
-import { ref, set } from 'firebase/database';
 import { Eye, EyeOff, Fish, LockKeyhole, Mail, ShieldCheck, Waves } from 'lucide-react';
 import { FormEvent, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { auth, db } from '../lib/firebase';
-
-function loginMessage(error: unknown) {
-  const code = error instanceof FirebaseError ? error.code : '';
-  if (code === 'auth/invalid-email') return 'Please enter a valid email address.';
-  if (code === 'auth/user-not-found') return 'No account found with this email. Please sign up first.';
-  if (code === 'auth/wrong-password') return 'Incorrect password. Please try again.';
-  if (code === 'auth/invalid-credential') return 'Email or password is incorrect.';
-  if (code === 'auth/user-disabled') return 'This account has been disabled.';
-  if (code === 'auth/operation-not-allowed') return 'Email/password login is not enabled in Firebase.';
-  if (code === 'auth/network-request-failed') return 'Network error. Please check your connection.';
-  return 'Login failed. Please try again.';
-}
-
-function signupMessage(error: unknown) {
-  const code = error instanceof FirebaseError ? error.code : '';
-  if (code === 'auth/email-already-in-use') return 'This email already has an account. Please log in instead.';
-  if (code === 'auth/weak-password') return 'Password should be at least 6 characters.';
-  if (code === 'auth/invalid-email') return 'Please enter a valid email address.';
-  if (code === 'auth/operation-not-allowed') return 'Email/password signup is not enabled in Firebase.';
-  if (code === 'auth/network-request-failed') return 'Network error. Please check your connection.';
-  return 'Signup failed. Please try again.';
-}
+import { AlertMessage } from '../components/ui';
+import { auth } from '../lib/firebase';
+import { ensureUserProfile, mapFirebaseAuthError } from '../services/userProfile';
 
 function AuthShell({ mode }: { mode: 'login' | 'signup' }) {
   const [email, setEmail] = useState('');
@@ -58,26 +37,58 @@ function AuthShell({ mode }: { mode: 'login' | 'signup' }) {
     setShowSignupPrompt(false);
     setLoading(true);
 
-    try {
-      if (mode === 'signup') {
-        const credential = await createUserWithEmailAndPassword(auth, email, password);
-        if (name) await updateProfile(credential.user, { displayName: name });
-        await set(ref(db, `users/${credential.user.uid}`), {
-          name: name || email.split('@')[0],
-          email,
-          createdAt: Date.now(),
-          devices: {},
-        });
-        await signOut(auth);
-        setSuccess('Account created successfully. Please log in.');
-      } else {
+    if (mode === 'login') {
+      try {
         await signInWithEmailAndPassword(auth, email, password);
         navigate('/dashboard');
+      } catch (err) {
+        const message = mapFirebaseAuthError(err, 'login');
+        setError(message);
+        setShowSignupPrompt(message.startsWith('No account found'));
+      } finally {
+        setLoading(false);
       }
+      return;
+    }
+
+    let accountCreated = false;
+    const setupWarnings: string[] = [];
+
+    try {
+      const credential = await createUserWithEmailAndPassword(auth, email, password);
+      accountCreated = true;
+
+      if (name) {
+        try {
+          await updateProfile(credential.user, { displayName: name });
+        } catch {
+          setupWarnings.push('display name');
+        }
+      }
+
+      try {
+        await ensureUserProfile(credential.user, { name: name || email.split('@')[0] });
+      } catch {
+        setupWarnings.push('profile details');
+      }
+
+      try {
+        await signOut(auth);
+      } catch {
+        setupWarnings.push('automatic sign out');
+      }
+
+      setSuccess(
+        setupWarnings.length
+          ? 'Account created successfully. Some profile details could not be saved, but you can log in.'
+          : 'Account created successfully. Please log in.',
+      );
     } catch (err) {
-      const message = mode === 'login' ? loginMessage(err) : signupMessage(err);
-      setError(message);
-      setShowSignupPrompt(message.startsWith('No account found'));
+      if (accountCreated) {
+        setSuccess('Account created successfully. Some profile details could not be saved, but you can log in.');
+      } else {
+        setError(mapFirebaseAuthError(err, 'signup'));
+      }
     } finally {
       setLoading(false);
     }
@@ -101,7 +112,7 @@ function AuthShell({ mode }: { mode: 'login' | 'signup' }) {
             <div className="grid gap-3 text-sm text-slate-200">
               <Feature icon={ShieldCheck} text="Firebase Auth + owner-scoped devices" />
               <Feature icon={Waves} text="Dark glass aquarium dashboard" />
-              <Feature icon={LockKeyhole} text="No global `/feednow` or `/timers` paths" />
+              <Feature icon={LockKeyhole} text="Per-device command paths only" />
             </div>
           </div>
         </section>
@@ -113,8 +124,8 @@ function AuthShell({ mode }: { mode: 'login' | 'signup' }) {
             <p className="mt-2 text-slate-300">Secure access for your private fleet of fish feeders.</p>
           </div>
 
-          {success && <p className="rounded-2xl border border-emerald-300/20 bg-emerald-400/10 p-3 text-emerald-100">{success}</p>}
-          {error && <p className="rounded-2xl border border-rose-300/20 bg-rose-500/10 p-3 text-rose-200">{error}</p>}
+          {success && <AlertMessage tone="success">{success}</AlertMessage>}
+          {error && <AlertMessage tone="danger">{error}</AlertMessage>}
 
           {mode === 'signup' && (
             <label className="block space-y-2">
@@ -218,7 +229,7 @@ export function ForgotPasswordPage() {
           <p className="mt-2 text-slate-300">Enter your email and we will send a reset link if the account exists.</p>
         </div>
         {message && <p className="rounded-2xl border border-emerald-300/20 bg-emerald-400/10 p-3 text-emerald-100">{message}</p>}
-        {error && <p className="rounded-2xl border border-rose-300/20 bg-rose-500/10 p-3 text-rose-200">{error}</p>}
+        {error && <AlertMessage tone="danger">{error}</AlertMessage>}
         <label className="block space-y-2">
           <span className="text-sm font-semibold text-slate-200">Email address</span>
           <input className="field" type="email" required value={email} onChange={(event) => setEmail(event.target.value)} />

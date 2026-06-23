@@ -1,2 +1,41 @@
-import{User,onAuthStateChanged,signOut}from'firebase/auth';import{get,set,ref}from'firebase/database';import{createContext,useContext,useEffect,useMemo,useState,ReactNode}from'react';import{auth,db}from'../lib/firebase';
-const C=createContext<{user:User|null;loading:boolean;logout:()=>Promise<void>}>({user:null,loading:true,logout:async()=>{}});export function AuthProvider({children}:{children:ReactNode}){const[user,setUser]=useState<User|null>(null);const[loading,setLoading]=useState(true);useEffect(()=>onAuthStateChanged(auth,async u=>{setUser(u);setLoading(false);if(u){const r=ref(db,`users/${u.uid}`);if(!(await get(r)).exists())await set(r,{name:u.displayName||u.email?.split('@')[0]||'Aquarist',email:u.email||'',createdAt:Date.now(),devices:{}})}}),[]);const v=useMemo(()=>({user,loading,logout:()=>signOut(auth)}),[user,loading]);return <C.Provider value={v}>{children}</C.Provider>}export const useAuth=()=>useContext(C);
+import { User, onAuthStateChanged, signOut } from 'firebase/auth';
+import { ReactNode, createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { auth } from '../lib/firebase';
+import { ensureUserProfile } from '../services/userProfile';
+
+const AuthContext = createContext<{ user: User | null; loading: boolean; logout: () => Promise<void> }>({
+  user: null,
+  loading: true,
+  logout: async () => {},
+});
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(
+    () =>
+      onAuthStateChanged(auth, async (firebaseUser) => {
+        setUser(firebaseUser);
+        setLoading(false);
+
+        if (firebaseUser) {
+          try {
+            await ensureUserProfile(firebaseUser);
+          } catch (error) {
+            console.warn('User profile sync failed; auth session remains valid.', error);
+          }
+        }
+      }),
+    [],
+  );
+
+  const value = useMemo(
+    () => ({ user, loading, logout: () => signOut(auth) }),
+    [user, loading],
+  );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+export const useAuth = () => useContext(AuthContext);

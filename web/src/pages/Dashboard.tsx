@@ -2,6 +2,7 @@ import { Activity, CalendarClock, Fish, ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { DeviceCard } from '../components/DeviceCard';
 import { PageTitle } from '../components/Layout';
+import { EmptyState, MetricCard } from '../components/ui';
 import { useAuth } from '../hooks/useAuth';
 import { useUserDevices } from '../hooks/useUserDevices';
 import { isOnline } from '../lib/format';
@@ -25,7 +26,7 @@ export function Dashboard() {
             <Fish size={54} />
           </div>
           <p className="badge-info w-fit">Production IoT foundation</p>
-          <h2 className="mt-5 max-w-2xl text-3xl font-black tracking-tight sm:text-5xl">One cloud dashboard. Many aquariums. Zero global feed commands.</h2>
+          <h2 className="display-title mt-5 max-w-3xl">One cloud dashboard. <span className="text-gradient">Many aquariums.</span></h2>
           <p className="mt-4 max-w-2xl leading-7 text-slate-300">
             Devices are loaded from your private `/users/{'{uid}'}/devices` map and controlled through `/devices/{'{deviceId}'}` paths only.
           </p>
@@ -36,9 +37,9 @@ export function Dashboard() {
         </div>
 
         <div className="grid gap-4 sm:grid-cols-3 xl:grid-cols-1">
-          <Metric icon={Fish} label="Linked feeders" value={devices.length} helper="Visible to this account" />
-          <Metric icon={Activity} label="Online now" value={onlineCount} helper="Based on last heartbeat" />
-          <Metric icon={CalendarClock} label="Feeds today" value={todayFeeds} helper="Across linked devices" />
+          <MetricCard icon={Fish} label="Linked feeders" value={devices.length} helper="Visible to this account" delay={0} />
+          <MetricCard icon={Activity} label="Online now" value={onlineCount} helper="Based on last heartbeat" delay={80} />
+          <MetricCard icon={CalendarClock} label="Feeds today" value={todayFeeds} helper="Across linked devices" delay={160} />
         </div>
       </section>
 
@@ -67,28 +68,13 @@ export function Dashboard() {
           {devices.map((device) => <DeviceCard key={device.id} device={device} />)}
         </div>
       ) : (
-        <div className="card text-center">
-          <div className="mx-auto grid h-16 w-16 place-items-center rounded-3xl bg-cyan-300/15 text-cyan-100">
-            <Fish size={32} />
-          </div>
-          <h2 className="mt-4 text-2xl font-black">No feeders linked yet</h2>
-          <p className="mx-auto my-3 max-w-xl text-slate-300">Power on a FishFeeder, use its setup portal to get a pairing code, then securely claim it from this dashboard.</p>
-          <Link className="btn-primary inline-block" to="/devices/pair">Start pairing</Link>
-        </div>
+        <EmptyState
+          icon={Fish}
+          title="No feeders linked yet"
+          body="Power on a FishFeeder, use its setup portal to get a pairing code, then securely claim it from this dashboard."
+          action={<Link className="btn-primary inline-block" to="/devices/pair">Start pairing</Link>}
+        />
       )}
     </>
-  );
-}
-
-function Metric({ icon: Icon, label, value, helper }: { icon: typeof Fish; label: string; value: number; helper: string }) {
-  return (
-    <div className="metric-card">
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-slate-400">{label}</p>
-        <Icon className="text-cyan-200" size={20} />
-      </div>
-      <b className="mt-3 block text-4xl font-black text-white">{value}</b>
-      <p className="mt-1 text-xs text-slate-400">{helper}</p>
-    </div>
   );
 }
