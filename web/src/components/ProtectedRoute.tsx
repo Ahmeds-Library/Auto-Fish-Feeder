@@ -1,0 +1,1 @@
+import{Navigate,Outlet}from'react-router-dom';import{useAuth}from'../hooks/useAuth';export function ProtectedRoute(){const{user,loading}=useAuth();if(loading)return <div className="p-8 text-cyan-100">Syncing aquarium cloud...</div>;return user?<Outlet/>:<Navigate to="/auth/login" replace/>}
