@@ -1,0 +1,2 @@
+import{onValue,ref}from'firebase/database';import{useEffect,useState}from'react';import{db}from'../lib/firebase';import{DeviceWithId}from'../types/schema';
+export function useDevice(deviceId?:string){const[device,setDevice]=useState<DeviceWithId|null>(null);useEffect(()=>{if(!deviceId)return;return onValue(ref(db,`devices/${deviceId}`),s=>setDevice(s.exists()?{id:deviceId,...s.val()}:null))},[deviceId]);return device}
