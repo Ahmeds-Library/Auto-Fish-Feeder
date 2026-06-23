@@ -9,6 +9,7 @@ import {
 import { Eye, EyeOff, Fish, LockKeyhole, Mail, ShieldCheck, Waves } from 'lucide-react';
 import { FormEvent, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { DeveloperCredit } from '../components/DeveloperCredit';
 import { AlertMessage } from '../components/ui';
 import { auth } from '../lib/firebase';
 import { ensureUserProfile, mapFirebaseAuthError } from '../services/userProfile';
@@ -179,6 +180,8 @@ function AuthShell({ mode }: { mode: 'login' | 'signup' }) {
               <Link className="text-cyan-300 hover:text-cyan-100" to="/auth/login">Already have an account? Login</Link>
             )}
           </div>
+
+          <DeveloperCredit variant="auth" />
         </form>
       </div>
     </div>
@@ -236,6 +239,7 @@ export function ForgotPasswordPage() {
         </label>
         <button className="btn-primary w-full" disabled={loading}>{loading ? 'Sending...' : 'Send reset link'}</button>
         <Link className="block text-center text-sm text-cyan-300 hover:text-cyan-100" to="/auth/login">Back to login</Link>
+        <DeveloperCredit variant="auth" />
       </form>
     </div>
   );

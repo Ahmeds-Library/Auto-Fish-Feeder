@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { NavLink, Outlet } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { DeveloperCredit } from './DeveloperCredit';
 import { PageTransition } from './ui';
 
 const nav = [
@@ -68,9 +69,12 @@ export function Layout() {
           ))}
         </nav>
 
-        <button onClick={logout} className="btn-ghost absolute bottom-5 left-5 right-5 flex items-center justify-center gap-2">
-          <LogOut size={18} /> Logout
-        </button>
+        <div className="absolute bottom-5 left-5 right-5 space-y-3">
+          <DeveloperCredit variant="sidebar" />
+          <button onClick={logout} className="btn-ghost flex w-full items-center justify-center gap-2">
+            <LogOut size={18} /> Logout
+          </button>
+        </div>
       </aside>
 
       <main className="relative z-10 pb-28 lg:ml-72">
@@ -85,6 +89,9 @@ export function Layout() {
         </header>
         <div className="mx-auto max-w-7xl p-4 sm:p-8">
           <PageTransition><Outlet /></PageTransition>
+          <div className="mt-8 pb-2 lg:hidden">
+            <DeveloperCredit variant="compact" />
+          </div>
         </div>
       </main>
 
