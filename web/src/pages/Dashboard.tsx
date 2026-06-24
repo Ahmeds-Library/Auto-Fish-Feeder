@@ -1,10 +1,11 @@
-import { Activity, AlertTriangle, CalendarClock, Fish, ShieldCheck } from 'lucide-react';
+import { Activity, AlertTriangle, CalendarClock, Fish, RotateCw, ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { DashboardClock } from '../components/DashboardClock';
 import { DeviceCard } from '../components/DeviceCard';
+import { EmptyFleetDashboard } from '../components/EmptyFleetDashboard';
 import { FleetHealth } from '../components/FleetHealth';
 import { MotionCard, StaggerGroup } from '../components/motion';
-import { AlertMessage, EmptyState, IconBubble, MetricCard, SkeletonCard, TimelineItem } from '../components/ui';
+import { AlertMessage, IconBubble, MetricCard, SkeletonCard, TimelineItem } from '../components/ui';
 import { useAuth } from '../hooks/useAuth';
 import { useUserDevices } from '../hooks/useUserDevices';
 import { isOnline } from '../lib/format';
@@ -18,107 +19,131 @@ export function Dashboard() {
   const recentLogs = devices
     .flatMap((device) => Object.values(device.logs ?? {}).map((log) => ({ ...log, deviceName: device.name })))
     .sort((a, b) => b.createdAt - a.createdAt)
-    .slice(0, 3);
+    .slice(0, 4);
   const hasDevices = devices.length > 0;
 
   return (
     <>
-      <MotionCard className="card motion-glow mb-5 overflow-hidden p-5 sm:p-6">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-          <div className="min-w-0">
-            <p className="badge-info w-fit">AquaFeed command center</p>
-            <h1 className="mt-3 max-w-3xl text-[clamp(1.85rem,4vw,3.35rem)] font-black leading-[1.05] tracking-[-0.045em] text-white">
-              Smart feeding, <span className="text-gradient">owner scoped.</span>
-            </h1>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300 sm:text-base">
-              Manage linked feeders, live commands, schedules, and device health without using global Firebase command paths.
-            </p>
-          </div>
-          <div className="flex flex-col gap-3 sm:flex-row lg:shrink-0">
-            <Link className="btn-primary inline-flex min-h-11 items-center justify-center" to="/devices/pair">Pair device</Link>
-            <Link className="btn-ghost inline-flex min-h-11 items-center justify-center" to="/devices">View fleet</Link>
-          </div>
-        </div>
-        <div className="mt-5 flex flex-wrap gap-2 border-t border-white/10 pt-4 text-xs text-slate-300">
-          <span className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1 text-cyan-100">Scoped RTDB paths</span>
-          <span className="rounded-full border border-white/10 bg-slate-950/35 px-3 py-1">/users/{'{uid}'}/devices</span>
-          <span className="rounded-full border border-white/10 bg-slate-950/35 px-3 py-1">/devices/{'{deviceId}'}</span>
-        </div>
-      </MotionCard>
+      <CommandHeader />
 
-      {error && (
-        <div className="mb-5">
-          <AlertMessage tone="danger"><b>Could not load your device fleet.</b> {error}</AlertMessage>
-        </div>
-      )}
-
-      <section className="mb-5 grid gap-4 xl:grid-cols-[1.45fr_.9fr]">
-        <FleetHealth total={devices.length} online={onlineCount} alerts={alertCount} feedsToday={todayFeeds} />
-        <DashboardClock />
-      </section>
-
-      {loading ? (
-        <section className="mb-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <SkeletonCard /><SkeletonCard /><SkeletonCard /><SkeletonCard />
-        </section>
-      ) : hasDevices ? (
-        <StaggerGroup className="mb-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <MetricCard icon={Fish} label="Linked feeders" value={devices.length} helper="Visible to this account" delay={0} />
-          <MetricCard icon={Activity} label="Online now" value={onlineCount} helper="Based on last heartbeat" delay={80} />
-          <MetricCard icon={CalendarClock} label="Feeds today" value={todayFeeds} helper="Across linked devices" delay={160} />
-          <MetricCard icon={AlertTriangle} label="Alerts" value={alertCount} helper="Devices reporting lastError" delay={240} />
-        </StaggerGroup>
+      {loading ? <DashboardLoading /> : error ? <DashboardError detail={error} /> : !hasDevices ? (
+        <EmptyFleetDashboard />
       ) : (
-        <MotionCard className="card mb-5 overflow-hidden p-5 sm:p-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex min-w-0 gap-4">
-              <IconBubble icon={Fish} />
-              <div>
-                <h2 className="text-2xl font-black tracking-tight text-white">Your first feeder is not paired yet.</h2>
-                <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-300">
-                  Power on the device, open the setup portal, then claim it securely with a pairing code. Once linked, command and health cards appear here.
-                </p>
-              </div>
-            </div>
-            <Link className="btn-primary inline-flex min-h-11 shrink-0 items-center justify-center" to="/devices/pair">Pair your first feeder</Link>
-          </div>
-        </MotionCard>
-      )}
+        <>
+          <KpiStrip total={devices.length} online={onlineCount} feedsToday={todayFeeds} alerts={alertCount} />
 
-      <section className="mb-5 grid gap-4 lg:grid-cols-[1fr_.85fr]">
-        <MotionCard className="card">
-          <div className="flex items-start gap-3">
-            <IconBubble icon={ShieldCheck} tone="success" />
-            <div>
-              <h2 className="section-title">Only devices linked to your account are visible here.</h2>
-              <p className="mt-3 text-sm leading-6 text-slate-300">The dashboard reads your private user-device map and never broadcasts commands globally. Each feed action stays scoped to one feeder.</p>
+          <section className="mb-5 grid gap-4 xl:grid-cols-[1.25fr_.75fr]">
+            <FleetHealth total={devices.length} online={onlineCount} alerts={alertCount} feedsToday={todayFeeds} />
+            <div className="grid gap-4">
+              <DashboardClock />
+              <OwnerScopedCard />
             </div>
-          </div>
-        </MotionCard>
-        <MotionCard className="card">
-          <p className="badge-info w-fit">Recent activity</p>
-          <div className="mt-4 space-y-3">
-            {recentLogs.length ? recentLogs.map((log, index) => (
-              <TimelineItem key={`${log.createdAt}-${index}`} title={log.level} tone={log.level === 'error' ? 'danger' : log.level === 'warning' ? 'warning' : log.level === 'success' ? 'success' : 'info'} meta={`${log.deviceName} • ${new Date(log.createdAt).toLocaleString()}`} delay={index * 80}>
-                {log.message}
-              </TimelineItem>
-            )) : <p className="text-sm text-slate-400">No recent device logs yet.</p>}
-          </div>
-        </MotionCard>
-      </section>
+          </section>
 
-      {loading ? null : hasDevices ? (
-        <StaggerGroup className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {devices.map((device) => <DeviceCard key={device.id} device={device} />)}
-        </StaggerGroup>
-      ) : !error && (
-        <EmptyState
-          icon={Fish}
-          title="No feeders linked yet"
-          body="Use the guided pairing flow after configuring your ESP8266 through the local setup portal. The empty fleet state stays calm until your first device is claimed."
-          action={<Link className="btn-primary inline-block" to="/devices/pair">Start pairing</Link>}
-        />
+          <section className="mb-5 grid gap-4 lg:grid-cols-[.85fr_1.15fr]">
+            <RecentActivity logs={recentLogs} />
+            <StaggerGroup className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {devices.map((device) => <DeviceCard key={device.id} device={device} />)}
+            </StaggerGroup>
+          </section>
+        </>
       )}
     </>
+  );
+}
+
+function CommandHeader() {
+  return (
+    <MotionCard className="card mb-5 overflow-hidden p-5 sm:p-6">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="badge-info w-fit">Dashboard</p>
+            <span className="rounded-full border border-white/10 bg-slate-950/35 px-3 py-1 text-xs font-semibold text-slate-300">Owner-scoped RTDB paths</span>
+          </div>
+          <h1 className="mt-3 text-[clamp(1.65rem,3.5vw,3rem)] font-black leading-[1.08] tracking-[-0.045em] text-white">Dashboard</h1>
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-300 sm:text-base">
+            Manage your linked fish feeders, schedules, commands, and device health from a compact control center.
+          </p>
+        </div>
+        <div className="grid gap-2 sm:flex sm:shrink-0">
+          <Link className="btn-primary inline-flex min-h-11 items-center justify-center" to="/devices/pair">Pair Device</Link>
+          <Link className="btn-ghost inline-flex min-h-11 items-center justify-center" to="/devices">View Devices</Link>
+        </div>
+      </div>
+    </MotionCard>
+  );
+}
+
+function DashboardLoading() {
+  return (
+    <div className="grid gap-4">
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <SkeletonCard /><SkeletonCard /><SkeletonCard /><SkeletonCard />
+      </section>
+      <section className="grid gap-4 xl:grid-cols-[1.25fr_.75fr]">
+        <SkeletonCard className="min-h-64" />
+        <SkeletonCard className="min-h-64" />
+      </section>
+    </div>
+  );
+}
+
+function DashboardError({ detail }: { detail: string }) {
+  return (
+    <MotionCard className="card motion-glow p-5 sm:p-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex gap-4">
+          <IconBubble icon={AlertTriangle} tone="danger" />
+          <div>
+            <h2 className="text-2xl font-black tracking-tight text-white">Could not load your device fleet</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-300">Check Firebase rules, network, or login state. {detail}</p>
+          </div>
+        </div>
+        <button className="btn-ghost inline-flex min-h-11 items-center justify-center gap-2" type="button" onClick={() => window.location.reload()}>
+          <RotateCw size={16} /> Retry
+        </button>
+      </div>
+    </MotionCard>
+  );
+}
+
+function KpiStrip({ total, online, feedsToday, alerts }: { total: number; online: number; feedsToday: number; alerts: number }) {
+  return (
+    <StaggerGroup className="mb-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <MetricCard icon={Fish} label="Linked feeders" value={total} helper="Visible to this account" delay={0} />
+      <MetricCard icon={Activity} label="Online now" value={online} helper="Based on last heartbeat" delay={80} />
+      <MetricCard icon={CalendarClock} label="Feeds today" value={feedsToday} helper="Across linked devices" delay={160} />
+      <MetricCard icon={AlertTriangle} label="Alerts" value={alerts} helper="Devices reporting lastError" delay={240} />
+    </StaggerGroup>
+  );
+}
+
+function OwnerScopedCard() {
+  return (
+    <MotionCard className="card p-5">
+      <div className="flex gap-3">
+        <IconBubble icon={ShieldCheck} tone="success" />
+        <div>
+          <h2 className="text-lg font-black text-white">Owner-scoped controls</h2>
+          <p className="mt-2 text-sm leading-6 text-slate-300">The dashboard reads your private user-device map and writes commands only to the selected feeder.</p>
+        </div>
+      </div>
+    </MotionCard>
+  );
+}
+
+function RecentActivity({ logs }: { logs: Array<{ level: string; message: string; createdAt: number; deviceName: string }> }) {
+  return (
+    <MotionCard className="card h-fit p-5">
+      <p className="badge-info w-fit">Recent activity</p>
+      <div className="mt-4 space-y-3">
+        {logs.length ? logs.map((log, index) => (
+          <TimelineItem key={`${log.createdAt}-${index}`} title={log.level} tone={log.level === 'error' ? 'danger' : log.level === 'warning' ? 'warning' : log.level === 'success' ? 'success' : 'info'} meta={`${log.deviceName} • ${new Date(log.createdAt).toLocaleString()}`} delay={index * 80}>
+            {log.message}
+          </TimelineItem>
+        )) : <p className="text-sm text-slate-400">No recent device logs yet.</p>}
+      </div>
+    </MotionCard>
   );
 }
