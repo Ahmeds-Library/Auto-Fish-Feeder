@@ -1,5 +1,6 @@
 import { motion, useReducedMotion } from 'framer-motion';
-import { Activity, AlertTriangle, Fish, LucideIcon, Radio } from 'lucide-react';
+import { Activity, AlertTriangle, Fish, LucideIcon, PlusCircle, Radio } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 type FleetHealthProps = {
   total: number;
@@ -49,17 +50,18 @@ export function FleetHealth({ total, online, feedsToday, alerts }: FleetHealthPr
               </defs>
             </svg>
             <div className="text-center">
-              <p className="text-3xl font-black tracking-tight text-white">{ratio}%</p>
-              <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-cyan-200/80">online</p>
+              <p className="text-3xl font-black tracking-tight text-white">{total ? `${ratio}%` : '—'}</p>
+              <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-cyan-200/80">{total ? 'online' : 'ready'}</p>
             </div>
           </div>
 
           <div className="min-w-0">
             <p className="badge-info w-fit">Fleet health</p>
-            <h2 className="mt-3 text-2xl font-black tracking-tight text-white sm:text-3xl">Linked feeder readiness</h2>
+            <h2 className="mt-3 text-2xl font-black tracking-tight text-white sm:text-3xl">{total ? 'Linked feeder readiness' : 'No feeders linked yet'}</h2>
             <p className="mt-2 text-sm leading-6 text-slate-300">
-              A live owner-scoped view using only devices linked to this account. No global command paths are used.
+              {total ? 'A live owner-scoped view using only devices linked to this account. No global command paths are used.' : 'Pair your first device to start fleet monitoring with owner-scoped health, feed, and alert telemetry.'}
             </p>
+            {!total && <Link to="/devices/pair" className="btn-primary mt-4 inline-flex items-center gap-2"><PlusCircle size={16} /> Pair first device</Link>}
           </div>
         </div>
 
@@ -73,7 +75,7 @@ export function FleetHealth({ total, online, feedsToday, alerts }: FleetHealthPr
         <div className="lg:col-span-2">
           <div className="flex items-center justify-between text-xs font-bold uppercase tracking-[0.22em] text-slate-400">
             <span>Online capacity</span>
-            <span>{online} active • {offline} offline</span>
+            <span>{total ? `${online} active • ${offline} offline` : 'Waiting for first feeder'}</span>
           </div>
           <div className="mt-3 h-3 overflow-hidden rounded-full border border-white/10 bg-slate-950/60">
             <motion.div

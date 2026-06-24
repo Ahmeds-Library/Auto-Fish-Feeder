@@ -1,21 +1,13 @@
 import { motion } from 'framer-motion';
 import { AlertTriangle, ArrowRight, Clock, Fish, Radio, Utensils } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { isOnline, timeAgo } from '../lib/format';
+import { isOnline, timeAgo, wifiQuality } from '../lib/format';
 import { DeviceWithId } from '../types/schema';
 import { AnimatedStatus, MotionCard } from './motion';
 
-function signalLabel(rssi?: number) {
-  if (typeof rssi !== 'number') return 'Unknown';
-  if (rssi > -55) return 'Excellent';
-  if (rssi > -70) return 'Good';
-  if (rssi > -82) return 'Weak';
-  return 'Poor';
-}
-
 export function DeviceCard({ device }: { device: DeviceWithId }) {
   const online = isOnline(device.status?.lastSeen);
-  const rssi = device.status?.wifi?.rssi;
+  const wifi = wifiQuality(device.status?.wifi?.rssi);
   const hasError = Boolean(device.status?.lastError);
   const statusTone = hasError ? 'danger' : online ? 'success' : 'warning';
 
@@ -50,7 +42,7 @@ export function DeviceCard({ device }: { device: DeviceWithId }) {
         <div className="relative mt-3 flex flex-wrap gap-2 text-xs text-slate-300">
           <span className="rounded-full bg-white/10 px-3 py-1">Last seen: {timeAgo(device.status?.lastSeen)}</span>
           <span className="rounded-full bg-white/10 px-3 py-1">Motor: {device.status?.motor?.state || 'unknown'}</span>
-          <span className="rounded-full bg-white/10 px-3 py-1"><Radio className="mr-1 inline" size={13} /> {signalLabel(rssi)} {typeof rssi === 'number' ? `(${rssi} dBm)` : ''}</span>
+          <span className="rounded-full bg-white/10 px-3 py-1"><Radio className="mr-1 inline" size={13} /> {wifi.value}</span>
         </div>
 
         {device.status?.lastError && (

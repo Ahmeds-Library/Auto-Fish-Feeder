@@ -1,15 +1,14 @@
 import { motion, useReducedMotion } from 'framer-motion';
 import { Activity, CalendarClock, Clock, Fish, Gauge, LucideIcon, Radio, Settings, Wifi } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { isOnline, timeAgo } from '../lib/format';
+import { isOnline, timeAgo, wifiQuality } from '../lib/format';
 import { DeviceWithId } from '../types/schema';
 import { AnimatedStatus } from './motion';
 
 export function DeviceHeader({ device }: { device: DeviceWithId }) {
   const shouldReduceMotion = useReducedMotion();
   const online = isOnline(device.status?.lastSeen);
-  const rssi = device.status?.wifi?.rssi ?? 0;
-  const wifiLabel = rssi >= -55 ? 'Excellent' : rssi >= -67 ? 'Good' : rssi >= -75 ? 'Fair' : 'Weak';
+  const wifi = wifiQuality(device.status?.wifi?.rssi);
   const quickLinks = [
     { to: `/devices/${device.id}/feed`, label: 'Feed', icon: Fish },
     { to: `/devices/${device.id}/schedules`, label: 'Schedules', icon: CalendarClock },
@@ -40,7 +39,7 @@ export function DeviceHeader({ device }: { device: DeviceWithId }) {
 
           <div className="grid gap-2 sm:grid-cols-3 xl:min-w-[32rem]">
             <HeaderMetric icon={Clock} label="Last seen" value={timeAgo(device.status?.lastSeen)} />
-            <HeaderMetric icon={Wifi} label="Wi-Fi" value={`${wifiLabel} ${rssi ? `(${rssi} dBm)` : ''}`} />
+            <HeaderMetric icon={Wifi} label="Wi-Fi" value={wifi.value} />
             <HeaderMetric icon={Activity} label="Motor" value={device.status?.motor?.state || 'idle'} />
             <HeaderMetric icon={Fish} label="Last feed" value={timeAgo(device.status?.feeding?.lastFeedAt)} />
             <HeaderMetric icon={Gauge} label="Feeds today" value={device.status?.feeding?.todayCount ?? 0} />

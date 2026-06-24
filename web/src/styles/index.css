@@ -116,13 +116,6 @@ body::before {
     @apply bg-gradient-to-r from-cyan-200 via-sky-200 to-emerald-200 bg-clip-text text-transparent;
   }
 
-  .page-enter {
-    animation: fade-up 450ms cubic-bezier(0.4, 0, 0.2, 1) both;
-  }
-
-  .stagger-item {
-    animation: fade-up 450ms cubic-bezier(0.4, 0, 0.2, 1) both;
-  }
 
   .section-title {
     font-size: clamp(1.35rem, 2.6vw, 2rem);
@@ -296,5 +289,24 @@ body::after {
   .card {
     border-radius: 1.45rem;
     padding: 1rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .card.p-0 {
+    padding: 0;
+  }
+
+  .navlink {
+    min-height: 2.75rem;
+    padding-left: 0.65rem;
+    padding-right: 0.65rem;
+  }
+
+  .field,
+  .btn-primary,
+  .btn-ghost,
+  .btn-danger {
+    min-height: 2.75rem;
   }
 }

@@ -2,11 +2,12 @@ import { FormEvent, ReactNode, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { ActiveCommandStatus } from '../components/ActiveCommandStatus';
 import { DeviceNav } from '../components/Layout';
+import { MotionCard, MotionPage } from '../components/motion';
 import { DeviceHeader } from '../components/DeviceHeader';
 import { AlertMessage, EmptyState, GlassCard, MetricCard, PrimaryButton, SecondaryButton, StatusBadge, TimelineItem } from '../components/ui';
 import { useAuth } from '../hooks/useAuth';
 import { useDevice } from '../hooks/useDevice';
-import { isOnline, timeAgo } from '../lib/format';
+import { isOnline, timeAgo, wifiQuality } from '../lib/format';
 import {
   deleteSchedule,
   saveSchedule,
@@ -39,7 +40,7 @@ function Shell({ children, title }: { children: ReactNode; title: string }) {
         </div>
       )}
       {deviceId && <DeviceNav id={deviceId} />}
-      <div className="page-enter">{children}</div>
+      <MotionPage>{children}</MotionPage>
     </>
   );
 }
@@ -70,6 +71,7 @@ export function OverviewPage() {
   }
 
   const online = isOnline(device.status.lastSeen);
+  const wifi = wifiQuality(device.status?.wifi?.rssi);
 
   return (
     <Shell title="Device overview">
@@ -77,7 +79,7 @@ export function OverviewPage() {
         <MetricCard icon={Gauge} label="Connection" value={online ? 'Online' : 'Offline'} helper={`Last seen ${timeAgo(device.status.lastSeen)}`} delay={0} />
         <MetricCard icon={Fish} label="Last feed" value={timeAgo(device.status.feeding.lastFeedAt)} helper={`${device.status.feeding.todayCount} feeds today`} delay={80} />
         <MetricCard icon={Activity} label="Motor state" value={device.status.motor.state || 'idle'} helper={`${device.status.motor.lastRunDurationMs || 0}ms last run`} delay={160} />
-        <MetricCard icon={Radio} label="Wi-Fi RSSI" value={`${device.status.wifi.rssi} dBm`} helper={device.status.wifi.connected ? 'Connected' : 'Disconnected'} delay={240} />
+        <MetricCard icon={Radio} label="Wi-Fi RSSI" value={wifi.value} helper={device.status.wifi.connected ? 'Connected' : 'Disconnected'} delay={240} />
       </div>
 
       <div className="mt-5 grid gap-4 lg:grid-cols-[1.15fr_.85fr]">
@@ -302,7 +304,7 @@ export function SchedulesPage() {
         </form>
         <div className="grid gap-3">
           {schedules.length ? schedules.map(([scheduleId, item], index) => (
-            <GlassCard className="stagger-item space-y-4" style={{ animationDelay: `${index * 80}ms` }} key={scheduleId}>
+            <MotionCard className="card space-y-4" style={{ transitionDelay: `${index * 60}ms` }} key={scheduleId}>
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   <StatusBadge tone={item.enabled ? 'success' : 'warning'}>{item.enabled ? 'enabled' : 'paused'}</StatusBadge>
@@ -317,7 +319,7 @@ export function SchedulesPage() {
               </div>
               <div className="flex flex-wrap gap-2">{item.days.map((day) => <span className="badge-info" key={day}>{day}</span>)}</div>
               {item.lastTriggeredKey && <p className="text-xs text-slate-500">Last triggered: {item.lastTriggeredKey}</p>}
-            </GlassCard>
+            </MotionCard>
           )) : <EmptyState icon={CalendarClock} title="No schedules yet" body="Create a per-device schedule to automate feedings safely." />}
         </div>
       </div>

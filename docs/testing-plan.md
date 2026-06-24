@@ -48,3 +48,9 @@
 - Confirm Dashboard shows the new React clock card and the old clock code is still only in `legacy/`.
 - Confirm the Active Command Status card appears on Overview and Feed pages with pending/running/completed/failed status tones.
 - Re-run the forbidden-path search and confirm active code does not use global `/feednow` or `/timers`.
+
+## Final Premium UI QA Pass
+
+- Confirm `DeviceHeader` shows Wi-Fi as `Unknown` when RSSI is missing and only labels real RSSI values as Excellent/Good/Fair/Weak.
+- Confirm the dashboard `FleetHealth` card shows a calm zero-device onboarding state instead of a failed `0%` health score when no feeders are linked.
+- Before deployment, run real browser checks at 320px, 360px, 390px, 768px, 1024px, 1366px, and 1440px across auth, dashboard, devices, pairing, and every device detail route.
