@@ -1,6 +1,7 @@
 import { Activity, AlertTriangle, CalendarClock, Fish, ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { DashboardClock } from '../components/DashboardClock';
+import { MotionCard, StaggerGroup } from '../components/motion';
 import { DeviceCard } from '../components/DeviceCard';
 import { PageTitle } from '../components/Layout';
 import { EmptyState, MetricCard, TimelineItem } from '../components/ui';
@@ -27,7 +28,7 @@ export function Dashboard() {
       />
 
       <section className="mb-6 grid gap-4 xl:grid-cols-[1.4fr_.6fr]">
-        <div className="card relative overflow-hidden p-7 sm:p-8">
+        <MotionCard className="card relative overflow-hidden p-7 sm:p-8 motion-glow">
           <div className="absolute right-6 top-6 hidden rounded-full border border-cyan-300/20 bg-cyan-300/10 p-6 text-cyan-100 sm:block">
             <Fish size={54} />
           </div>
@@ -40,17 +41,17 @@ export function Dashboard() {
             <Link className="btn-primary" to="/devices/pair">Pair a feeder</Link>
             <Link className="btn-ghost" to="/devices">View fleet</Link>
           </div>
-        </div>
+        </MotionCard>
 
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
+        <StaggerGroup className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
           <MetricCard icon={Fish} label="Linked feeders" value={devices.length} helper="Visible to this account" delay={0} />
           <MetricCard icon={Activity} label="Online now" value={onlineCount} helper="Based on last heartbeat" delay={80} />
           <MetricCard icon={CalendarClock} label="Feeds today" value={todayFeeds} helper="Across linked devices" delay={160} />
           <MetricCard icon={AlertTriangle} label="Alerts" value={alertCount} helper="Devices reporting lastError" delay={240} />
-        </div>
+        </StaggerGroup>
       </section>
 
-      <section className="mb-6 grid gap-4 md:grid-cols-2 xl:grid-cols-[1fr_1fr_1fr_.95fr]">
+      <StaggerGroup className="mb-6 grid gap-4 md:grid-cols-2 xl:grid-cols-[1fr_1fr_1fr_.95fr]">
         <div className="card">
           <ShieldCheck className="text-emerald-200" />
           <h3 className="mt-3 text-lg font-bold">Owner scoped</h3>
@@ -67,7 +68,7 @@ export function Dashboard() {
           <p className="mt-2 text-sm leading-6 text-slate-300">Schedules live at `/devices/{'{deviceId}'}/schedules` for safe scaling.</p>
         </div>
         <DashboardClock />
-      </section>
+      </StaggerGroup>
 
 
 
@@ -92,9 +93,9 @@ export function Dashboard() {
       {loading ? (
         <div className="card animate-pulse text-cyan-100">Loading your aquarium fleet...</div>
       ) : devices.length ? (
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <StaggerGroup className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {devices.map((device) => <DeviceCard key={device.id} device={device} />)}
-        </div>
+        </StaggerGroup>
       ) : (
         <EmptyState
           icon={Fish}

@@ -1,8 +1,10 @@
 import { FirebaseError } from 'firebase/app';
+import { motion } from 'framer-motion';
 import { CheckCircle2, Copy, KeyRound, QrCode, Router, Smartphone, Wifi } from 'lucide-react';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { PageTitle } from '../components/Layout';
+import { MotionCard, StaggerGroup } from '../components/motion';
 import { AlertMessage } from '../components/ui';
 import { claimDevice } from '../services/pairingService';
 
@@ -102,36 +104,36 @@ export function PairPage() {
               <h2 className="mt-3 text-2xl font-black">From hardware setup to cloud ownership</h2>
               <p className="mt-2 text-sm leading-6 text-slate-300">Follow these steps once per feeder. After claiming, the device is locked to your Firebase user until removed.</p>
             </div>
-            <div className="grid gap-0 md:grid-cols-5">
+            <StaggerGroup className="grid gap-0 md:grid-cols-5">
               {steps.map((step, index) => {
                 const Icon = step.icon;
                 return (
-                  <article className="border-b border-white/10 p-5 md:border-b-0 md:border-r last:md:border-r-0" key={step.title}>
+                  <motion.article variants={{ hidden: { opacity: 0, y: 14 }, show: { opacity: 1, y: 0 } }} className="border-b border-white/10 p-5 md:border-b-0 md:border-r last:md:border-r-0" key={step.title}>
                     <div className="mb-4 flex items-center gap-3">
                       <span className="grid h-10 w-10 place-items-center rounded-2xl bg-cyan-300/15 text-cyan-100 ring-1 ring-cyan-300/20"><Icon size={20} /></span>
                       <span className="text-xs font-black uppercase tracking-[0.25em] text-cyan-300">0{index + 1}</span>
                     </div>
                     <h3 className="font-bold text-white">{step.title}</h3>
                     <p className="mt-2 text-sm leading-6 text-slate-300">{step.body}</p>
-                  </article>
+                  </motion.article>
                 );
               })}
-            </div>
+            </StaggerGroup>
           </div>
 
 
 
           <div className="grid gap-4 md:grid-cols-2">
-            <div className="card">
+            <MotionCard className="card">
               <p className="text-xs font-black uppercase tracking-[0.24em] text-cyan-300">Setup Wi-Fi</p>
               <h3 className="mt-3 text-xl font-black">FishFeeder-Setup</h3>
               <p className="mt-2 text-sm text-slate-300">Password: <b className="text-cyan-100">setup1234</b></p>
-            </div>
-            <div className="card">
+            </MotionCard>
+            <MotionCard className="card">
               <p className="text-xs font-black uppercase tracking-[0.24em] text-cyan-300">Setup portal</p>
               <h3 className="mt-3 text-xl font-black">http://192.168.4.1</h3>
               <p className="mt-2 text-sm text-slate-300">Enter Wi-Fi, Firebase, and motor settings before claiming.</p>
-            </div>
+            </MotionCard>
           </div>
 
           {pairingLinkDetected && (
@@ -145,7 +147,7 @@ export function PairPage() {
           </p>
         </div>
 
-        <form onSubmit={submit} className="card h-fit space-y-5 p-6">
+        <motion.form initial={{ opacity: 0, y: 16, scale: 0.985 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.36, ease: [0.22, 1, 0.36, 1] }} onSubmit={submit} className="card h-fit space-y-5 p-6">
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-sm font-bold uppercase tracking-[0.24em] text-cyan-300">Secure claim</p>
@@ -154,7 +156,7 @@ export function PairPage() {
             <span className="grid h-12 w-12 place-items-center rounded-2xl bg-cyan-300/15 text-cyan-100 ring-1 ring-cyan-300/20"><KeyRound /></span>
           </div>
 
-          {success && <AlertMessage tone="success">{success}</AlertMessage>}
+          {success && <motion.div initial={{ scale: 0.96, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}><AlertMessage tone="success">{success}</AlertMessage></motion.div>}
           {error && <AlertMessage tone="danger">{error}</AlertMessage>}
 
           <label className="block space-y-2">
@@ -191,7 +193,7 @@ export function PairPage() {
             <Copy className="mr-2 inline text-cyan-200" size={16} />
             The ESP setup portal can show a URL like `/devices/pair?deviceId=FF-A84F21&code=483921`. Open that URL while logged in to prefill this form.
           </div>
-        </form>
+        </motion.form>
       </div>
     </>
   );

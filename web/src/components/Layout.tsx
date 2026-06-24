@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion';
 import {
   Activity,
   CalendarClock,
@@ -39,11 +40,11 @@ export function Layout() {
   return (
     <div className="min-h-screen">
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute left-1/2 top-16 h-72 w-72 -translate-x-1/2 rounded-full bg-cyan-400/10 blur-3xl" />
-        <div className="absolute bottom-10 right-10 h-96 w-96 rounded-full bg-blue-500/10 blur-3xl" />
+        <motion.div animate={{ x: [0, 24, -10, 0], y: [0, -12, 16, 0] }} transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }} className="absolute left-1/2 top-16 h-72 w-72 -translate-x-1/2 rounded-full bg-cyan-400/10 blur-3xl" />
+        <motion.div animate={{ x: [0, -18, 12, 0], y: [0, 18, -8, 0] }} transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut' }} className="absolute bottom-10 right-10 h-96 w-96 rounded-full bg-blue-500/10 blur-3xl" />
       </div>
 
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-72 border-r border-white/10 bg-slate-950/60 p-5 backdrop-blur-2xl lg:block">
+      <motion.aside initial={{ x: -18, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }} className="fixed inset-y-0 left-0 z-30 hidden w-72 border-r border-white/10 bg-slate-950/60 p-5 backdrop-blur-2xl lg:block">
         <div className="mb-8 flex items-center gap-3">
           <span className="rounded-2xl bg-cyan-300 p-2.5 text-slate-950 shadow-glow">
             <Fish size={24} />
@@ -75,10 +76,10 @@ export function Layout() {
             <LogOut size={18} /> Logout
           </button>
         </div>
-      </aside>
+      </motion.aside>
 
-      <main className="relative z-10 pb-28 lg:ml-72">
-        <header className="sticky top-0 z-20 border-b border-white/10 bg-slate-950/55 px-4 py-3 backdrop-blur-2xl lg:hidden">
+      <main className="safe-bottom relative z-10 lg:ml-72">
+        <motion.header initial={{ y: -12, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }} className="sticky top-0 z-20 border-b border-white/10 bg-slate-950/55 px-4 py-3 backdrop-blur-2xl lg:hidden">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 font-black">
               <span className="rounded-xl bg-cyan-300 p-2 text-slate-950"><Fish size={18} /></span>
@@ -86,7 +87,7 @@ export function Layout() {
             </div>
             <span className="badge-info">Live</span>
           </div>
-        </header>
+        </motion.header>
         <div className="mx-auto max-w-7xl p-4 sm:p-8">
           <PageTransition><Outlet /></PageTransition>
           <div className="mt-8 pb-2 lg:hidden">
@@ -95,19 +96,19 @@ export function Layout() {
         </div>
       </main>
 
-      <nav className="fixed bottom-0 left-0 right-0 z-30 grid grid-cols-4 border-t border-white/10 bg-slate-950/85 p-2 backdrop-blur-2xl lg:hidden">
+      <motion.nav initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }} className="fixed bottom-0 left-0 right-0 z-30 grid grid-cols-4 border-t border-white/10 bg-slate-950/85 p-2 backdrop-blur-2xl lg:hidden">
         {nav.map(({ to, label, icon: Icon }) => (
           <NavLink key={to} to={to} className={({ isActive }) => `navlink justify-center px-2 ${isActive ? 'navlink-active' : ''}`}>
             <span className="flex flex-col items-center gap-1 text-[11px]"><Icon size={18} />{label.replace(' Device', '')}</span>
           </NavLink>
         ))}
-      </nav>
+      </motion.nav>
     </div>
   );
 }
 
 export const DeviceNav = ({ id }: { id: string }) => (
-  <div className="mb-6 flex gap-2 overflow-x-auto rounded-3xl border border-white/10 bg-white/[0.04] p-2 backdrop-blur-xl">
+  <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.28 }} className="mb-6 flex gap-2 overflow-x-auto rounded-3xl border border-white/10 bg-white/[0.04] p-2 backdrop-blur-xl">
     {deviceNav.map(({ path, label, icon: Icon }) => (
       <NavLink
         className={({ isActive }) => `navlink whitespace-nowrap ${isActive ? 'navlink-active' : ''}`}
@@ -117,12 +118,12 @@ export const DeviceNav = ({ id }: { id: string }) => (
         <Icon size={17} /> {label}
       </NavLink>
     ))}
-  </div>
+  </motion.div>
 );
 
 export function PageTitle({ title, subtitle }: { title: string; subtitle?: string }) {
   return (
-    <div className="mb-8 overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.045] p-6 backdrop-blur-xl sm:p-8">
+    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.36, ease: [0.22, 1, 0.36, 1] }} className="mb-8 overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.045] p-6 backdrop-blur-xl sm:p-8">
       <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
         <div>
           <p className="text-sm font-bold uppercase tracking-[0.3em] text-cyan-300">FishFeeder</p>
@@ -133,6 +134,6 @@ export function PageTitle({ title, subtitle }: { title: string; subtitle?: strin
           <LinkIcon size={16} /> Scoped RTDB paths
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

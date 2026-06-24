@@ -1,4 +1,5 @@
 import { FirebaseError } from 'firebase/app';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
@@ -97,7 +98,7 @@ function AuthShell({ mode }: { mode: 'login' | 'signup' }) {
 
   return (
     <div className="grid min-h-screen place-items-center p-4 sm:p-8">
-      <div className="grid w-full max-w-6xl overflow-hidden rounded-[2.5rem] border border-white/10 bg-white/[0.055] shadow-2xl shadow-cyan-950/40 backdrop-blur-2xl lg:grid-cols-[1.05fr_.95fr]">
+      <motion.div initial={{ opacity: 0, y: 18, scale: 0.985 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }} className="grid w-full max-w-6xl overflow-hidden rounded-[2.5rem] border border-white/10 bg-white/[0.055] shadow-2xl shadow-cyan-950/40 backdrop-blur-2xl lg:grid-cols-[1.05fr_.95fr]">
         <section className="relative hidden overflow-hidden p-10 lg:block">
           <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/20 via-blue-500/10 to-transparent" />
           <div className="relative z-10 flex h-full flex-col justify-between">
@@ -125,8 +126,10 @@ function AuthShell({ mode }: { mode: 'login' | 'signup' }) {
             <p className="mt-2 text-slate-300">Secure access for your private fleet of fish feeders.</p>
           </div>
 
-          {success && <AlertMessage tone="success">{success}</AlertMessage>}
-          {error && <AlertMessage tone="danger">{error}</AlertMessage>}
+          <AnimatePresence mode="popLayout">
+            {success && <motion.div key="success" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}><AlertMessage tone="success">{success}</AlertMessage></motion.div>}
+            {error && <motion.div key="error" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}><AlertMessage tone="danger">{error}</AlertMessage></motion.div>}
+          </AnimatePresence>
 
           {mode === 'signup' && (
             <label className="block space-y-2">
@@ -156,9 +159,9 @@ function AuthShell({ mode }: { mode: 'login' | 'signup' }) {
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
               />
-              <button className="absolute right-2 top-1/2 -translate-y-1/2 rounded-xl p-2 text-slate-300 hover:bg-white/10" type="button" onClick={() => setShowPassword((value) => !value)}>
+              <motion.button whileTap={{ scale: 0.92 }} className="absolute right-2 top-1/2 -translate-y-1/2 rounded-xl p-2 text-slate-300 hover:bg-white/10" type="button" onClick={() => setShowPassword((value) => !value)}>
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
+              </motion.button>
             </div>
             {mode === 'signup' && <span className="text-xs text-slate-400">Use at least 6 characters. Never reuse your Firebase device password.</span>}
           </label>
@@ -183,7 +186,7 @@ function AuthShell({ mode }: { mode: 'login' | 'signup' }) {
 
           <DeveloperCredit variant="auth" />
         </form>
-      </div>
+      </motion.div>
     </div>
   );
 }
@@ -223,7 +226,7 @@ export function ForgotPasswordPage() {
 
   return (
     <div className="grid min-h-screen place-items-center p-4">
-      <form onSubmit={submit} className="card w-full max-w-md space-y-5 p-7">
+      <motion.form initial={{ opacity: 0, y: 18, scale: 0.985 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.36, ease: [0.22, 1, 0.36, 1] }} onSubmit={submit} className="card w-full max-w-md space-y-5 p-7">
         <span className="inline-grid h-12 w-12 place-items-center rounded-2xl bg-cyan-300/15 text-cyan-100 ring-1 ring-cyan-300/20">
           <LockKeyhole size={24} />
         </span>
@@ -240,7 +243,7 @@ export function ForgotPasswordPage() {
         <button className="btn-primary w-full" disabled={loading}>{loading ? 'Sending...' : 'Send reset link'}</button>
         <Link className="block text-center text-sm text-cyan-300 hover:text-cyan-100" to="/auth/login">Back to login</Link>
         <DeveloperCredit variant="auth" />
-      </form>
+      </motion.form>
     </div>
   );
 }
