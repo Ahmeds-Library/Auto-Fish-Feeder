@@ -1,8 +1,8 @@
 import { FormEvent, ReactNode, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { ActiveCommandStatus } from '../components/ActiveCommandStatus';
-import { DeviceNav, PageTitle } from '../components/Layout';
-import { DeviceHeader } from '../components/device/DeviceHeader';
+import { DeviceNav } from '../components/Layout';
+import { DeviceHeader } from '../components/DeviceHeader';
 import { AlertMessage, EmptyState, GlassCard, MetricCard, PrimaryButton, SecondaryButton, StatusBadge, TimelineItem } from '../components/ui';
 import { useAuth } from '../hooks/useAuth';
 import { useDevice } from '../hooks/useDevice';
@@ -33,11 +33,11 @@ function Shell({ children, title }: { children: ReactNode; title: string }) {
 
   return (
     <>
-      <PageTitle
-        title={title}
-        subtitle={device ? `${device.name} • ${device.id}` : 'Loading selected feeder...'}
-      />
-      {device && <DeviceHeader device={device} />}
+      {device ? <DeviceHeader device={device} /> : (
+        <div className="mb-5 rounded-[2rem] border border-white/10 bg-white/[0.045] p-6 text-slate-300 backdrop-blur-xl">
+          Loading selected feeder for {title.toLowerCase()}...
+        </div>
+      )}
       {deviceId && <DeviceNav id={deviceId} />}
       <div className="page-enter">{children}</div>
     </>

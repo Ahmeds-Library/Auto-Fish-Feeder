@@ -1,7 +1,7 @@
 import { Activity, AlertTriangle, CalendarClock, Fish, ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { DashboardClock } from '../components/DashboardClock';
-import { FleetHealthCard } from '../components/dashboard/FleetHealthCard';
+import { FleetHealth } from '../components/FleetHealth';
 import { MotionCard, StaggerGroup } from '../components/motion';
 import { DeviceCard } from '../components/DeviceCard';
 import { PageTitle } from '../components/Layout';
@@ -53,7 +53,7 @@ export function Dashboard() {
       </section>
 
       <StaggerGroup className="mb-6 grid gap-4 md:grid-cols-2 xl:grid-cols-[1fr_1fr_1fr_.95fr]">
-        <FleetHealthCard total={devices.length} online={onlineCount} alerts={alertCount} feedsToday={todayFeeds} />
+        <FleetHealth total={devices.length} online={onlineCount} alerts={alertCount} feedsToday={todayFeeds} />
         <div className="card">
           <ShieldCheck className="text-emerald-200" />
           <h3 className="mt-3 text-lg font-bold">Owner scoped</h3>
