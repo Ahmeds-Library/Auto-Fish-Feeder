@@ -1,10 +1,11 @@
 import { Activity, AlertTriangle, CalendarClock, Fish, ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { DashboardClock } from '../components/DashboardClock';
+import { FleetHealthCard } from '../components/dashboard/FleetHealthCard';
 import { MotionCard, StaggerGroup } from '../components/motion';
 import { DeviceCard } from '../components/DeviceCard';
 import { PageTitle } from '../components/Layout';
-import { EmptyState, MetricCard, TimelineItem } from '../components/ui';
+import { EmptyState, MetricCard, SkeletonCard, TimelineItem } from '../components/ui';
 import { useAuth } from '../hooks/useAuth';
 import { useUserDevices } from '../hooks/useUserDevices';
 import { isOnline } from '../lib/format';
@@ -52,6 +53,7 @@ export function Dashboard() {
       </section>
 
       <StaggerGroup className="mb-6 grid gap-4 md:grid-cols-2 xl:grid-cols-[1fr_1fr_1fr_.95fr]">
+        <FleetHealthCard total={devices.length} online={onlineCount} alerts={alertCount} feedsToday={todayFeeds} />
         <div className="card">
           <ShieldCheck className="text-emerald-200" />
           <h3 className="mt-3 text-lg font-bold">Owner scoped</h3>
@@ -91,7 +93,7 @@ export function Dashboard() {
       </section>
 
       {loading ? (
-        <div className="card animate-pulse text-cyan-100">Loading your aquarium fleet...</div>
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3"><SkeletonCard /><SkeletonCard /><SkeletonCard /></div>
       ) : devices.length ? (
         <StaggerGroup className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {devices.map((device) => <DeviceCard key={device.id} device={device} />)}

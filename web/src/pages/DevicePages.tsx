@@ -2,6 +2,7 @@ import { FormEvent, ReactNode, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { ActiveCommandStatus } from '../components/ActiveCommandStatus';
 import { DeviceNav, PageTitle } from '../components/Layout';
+import { DeviceHeader } from '../components/device/DeviceHeader';
 import { AlertMessage, EmptyState, GlassCard, MetricCard, PrimaryButton, SecondaryButton, StatusBadge, TimelineItem } from '../components/ui';
 import { useAuth } from '../hooks/useAuth';
 import { useDevice } from '../hooks/useDevice';
@@ -36,6 +37,7 @@ function Shell({ children, title }: { children: ReactNode; title: string }) {
         title={title}
         subtitle={device ? `${device.name} • ${device.id}` : 'Loading selected feeder...'}
       />
+      {device && <DeviceHeader device={device} />}
       {deviceId && <DeviceNav id={deviceId} />}
       <div className="page-enter">{children}</div>
     </>
@@ -143,10 +145,10 @@ export function FeedPage() {
   return (
     <Shell title="Manual feed">
       <div className="grid gap-5 lg:grid-cols-[1fr_.8fr]">
-        <GlassCard className="space-y-5">
+        <GlassCard className="space-y-5 motion-glow">
           <div>
-            <p className="badge-info w-fit">Manual command</p>
-            <h2 className="section-title mt-3">Feed exactly one selected device</h2>
+            <p className="badge-info w-fit">Primary command</p>
+            <h2 className="display-title mt-3 max-w-2xl">Feed exactly one selected device</h2>
             <p className="mt-2 text-sm leading-6 text-slate-300">Feed Now creates a pending per-device command. It writes only to <code>/devices/{deviceId}/commands/active</code>.</p>
           </div>
           {success && <AlertMessage tone="success">{success}</AlertMessage>}

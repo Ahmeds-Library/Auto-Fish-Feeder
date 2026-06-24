@@ -127,3 +127,56 @@ export function TimelineItem({ tone = 'info', title, meta, children, delay = 0 }
     </GlassCard>
   );
 }
+
+export function SectionHeader({ eyebrow, title, body, action }: { eyebrow?: string; title: string; body?: string; action?: ReactNode }) {
+  return (
+    <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+      <div>
+        {eyebrow && <p className="text-xs font-black uppercase tracking-[0.28em] text-cyan-300">{eyebrow}</p>}
+        <h2 className="section-title mt-1">{title}</h2>
+        {body && <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-300">{body}</p>}
+      </div>
+      {action}
+    </div>
+  );
+}
+
+export function SkeletonCard({ lines = 3, className = '' }: { lines?: number; className?: string }) {
+  return (
+    <div className={`card space-y-4 ${className}`}>
+      <div className="skeleton h-10 w-24" />
+      <div className="skeleton h-8 w-2/3" />
+      {Array.from({ length: lines }).map((_, index) => <div className="skeleton h-4" style={{ width: `${85 - index * 12}%` }} key={index} />)}
+    </div>
+  );
+}
+
+export function LoadingOverlay({ label = 'Preparing premium dashboard...' }: { label?: string }) {
+  return (
+    <div className="grid min-h-[55vh] place-items-center p-6">
+      <GlassCard className="w-full max-w-md text-center">
+        <Loader2 className="mx-auto animate-spin text-cyan-200" size={30} />
+        <h2 className="mt-4 text-xl font-black text-white">{label}</h2>
+        <p className="mt-2 text-sm text-slate-400">Loading secure owner-scoped IoT controls.</p>
+      </GlassCard>
+    </div>
+  );
+}
+
+export function DangerButton({ children, className = '', ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  return <motion.button whileHover={{ y: -2 }} whileTap={{ scale: 0.985 }} className={`btn-danger inline-flex min-h-11 items-center justify-center gap-2 ${className}`} {...props}>{children}</motion.button>;
+}
+
+export function FormSwitch({ checked, onChange, label, helper }: { checked: boolean; onChange: (checked: boolean) => void; label: string; helper?: string }) {
+  return (
+    <label className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-slate-950/35 p-4">
+      <span>
+        <span className="block text-sm font-semibold text-slate-100">{label}</span>
+        {helper && <span className="mt-1 block text-xs text-slate-400">{helper}</span>}
+      </span>
+      <button type="button" role="switch" aria-checked={checked} onClick={() => onChange(!checked)} className={`relative h-7 w-12 rounded-full transition ${checked ? 'bg-cyan-300' : 'bg-white/15'}`}>
+        <motion.span layout className="absolute top-1 h-5 w-5 rounded-full bg-slate-950 shadow" animate={{ x: checked ? 24 : 4 }} transition={{ type: 'spring', stiffness: 450, damping: 30 }} />
+      </button>
+    </label>
+  );
+}
