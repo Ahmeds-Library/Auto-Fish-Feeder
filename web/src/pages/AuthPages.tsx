@@ -7,11 +7,11 @@ import {
   signOut,
   updateProfile,
 } from 'firebase/auth';
-import { Eye, EyeOff, Fish, LockKeyhole, Mail, ShieldCheck, Waves } from 'lucide-react';
+import { Eye, EyeOff, Fish, KeyRound, LockKeyhole, LogIn, Mail, ShieldCheck, UserPlus, Waves } from 'lucide-react';
 import { FormEvent, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { DeveloperCredit } from '../components/DeveloperCredit';
-import { AlertMessage } from '../components/ui';
+import { AlertMessage, IconBubble } from '../components/ui';
 import { auth } from '../lib/firebase';
 import { ensureUserProfile, mapFirebaseAuthError } from '../services/userProfile';
 
@@ -23,7 +23,6 @@ function AuthShell({ mode }: { mode: 'login' | 'signup' }) {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showSignupPrompt, setShowSignupPrompt] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,7 +35,6 @@ function AuthShell({ mode }: { mode: 'login' | 'signup' }) {
     event.preventDefault();
     setError('');
     setSuccess('');
-    setShowSignupPrompt(false);
     setLoading(true);
 
     if (mode === 'login') {
@@ -46,7 +44,6 @@ function AuthShell({ mode }: { mode: 'login' | 'signup' }) {
       } catch (err) {
         const message = mapFirebaseAuthError(err, 'login');
         setError(message);
-        setShowSignupPrompt(message.startsWith('No account found'));
       } finally {
         setLoading(false);
       }
@@ -170,17 +167,14 @@ function AuthShell({ mode }: { mode: 'login' | 'signup' }) {
             {loading ? 'Please wait...' : mode === 'login' ? 'Login' : 'Sign up'}
           </button>
 
-          {showSignupPrompt && <Link className="btn-ghost block text-center" to="/auth/signup">Go to signup</Link>}
-
-          <div className="space-y-2 text-center text-sm text-slate-400">
+          <div className="grid gap-3">
             {mode === 'login' ? (
               <>
-                <Link className="text-cyan-300 hover:text-cyan-100" to="/auth/signup">Create an account</Link>
-                <br />
-                <Link className="text-cyan-300 hover:text-cyan-100" to="/auth/forgot-password">Forgot password?</Link>
+                <AuthAction eyebrow="New to AquaFeed?" label="Create an account" to="/auth/signup" icon={UserPlus} />
+                <AuthAction eyebrow="Need account access?" label="Reset password" to="/auth/forgot-password" icon={KeyRound} />
               </>
             ) : (
-              <Link className="text-cyan-300 hover:text-cyan-100" to="/auth/login">Already have an account? Login</Link>
+              <AuthAction eyebrow="Already managing feeders?" label="Back to login" to="/auth/login" icon={LogIn} />
             )}
           </div>
 
@@ -188,6 +182,20 @@ function AuthShell({ mode }: { mode: 'login' | 'signup' }) {
         </form>
       </motion.div>
     </div>
+  );
+}
+
+function AuthAction({ eyebrow, label, to, icon }: { eyebrow: string; label: string; to: string; icon: typeof UserPlus }) {
+  return (
+    <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.985 }}>
+      <Link to={to} className="group flex min-h-14 items-center gap-3 rounded-3xl border border-white/10 bg-slate-950/30 p-3 text-left transition hover:border-cyan-300/25 hover:bg-cyan-300/10">
+        <IconBubble icon={icon} />
+        <span className="min-w-0">
+          <span className="block text-xs font-bold uppercase tracking-[0.22em] text-slate-500">{eyebrow}</span>
+          <span className="mt-0.5 block font-bold text-cyan-100 transition group-hover:text-white">{label}</span>
+        </span>
+      </Link>
+    </motion.div>
   );
 }
 
@@ -241,7 +249,7 @@ export function ForgotPasswordPage() {
           <input className="field" type="email" required value={email} onChange={(event) => setEmail(event.target.value)} />
         </label>
         <button className="btn-primary w-full" disabled={loading}>{loading ? 'Sending...' : 'Send reset link'}</button>
-        <Link className="block text-center text-sm text-cyan-300 hover:text-cyan-100" to="/auth/login">Back to login</Link>
+        <AuthAction eyebrow="Remembered your password?" label="Back to login" to="/auth/login" icon={LogIn} />
         <DeveloperCredit variant="auth" />
       </motion.form>
     </div>

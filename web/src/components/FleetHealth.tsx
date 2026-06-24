@@ -16,6 +16,35 @@ export function FleetHealth({ total, online, feedsToday, alerts }: FleetHealthPr
   const circumference = 2 * Math.PI * 42;
   const strokeDashoffset = circumference - (ratio / 100) * circumference;
 
+  if (total === 0) {
+    return (
+      <motion.div
+        initial={shouldReduceMotion ? false : { opacity: 0, y: 18, scale: 0.985 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+        className="card motion-glow relative overflow-hidden p-0 md:col-span-2 xl:col-span-2"
+      >
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(34,211,238,0.14),transparent_34%),radial-gradient(circle_at_90%_10%,rgba(52,211,153,0.08),transparent_28%)]" />
+        <div className="relative grid gap-5 p-5 sm:p-6 lg:grid-cols-[auto_1fr] lg:items-center">
+          <div className="mx-auto grid size-32 shrink-0 place-items-center rounded-full border border-cyan-300/20 bg-cyan-300/10 text-cyan-100 sm:mx-0">
+            <Fish size={42} />
+          </div>
+          <div className="min-w-0 text-center sm:text-left">
+            <p className="badge-info mx-auto w-fit sm:mx-0">Fleet health</p>
+            <h2 className="mt-3 text-2xl font-black tracking-tight text-white sm:text-3xl">No feeders linked yet</h2>
+            <p className="mx-auto mt-2 max-w-2xl text-sm leading-6 text-slate-300 sm:mx-0">
+              Pair your first device to start fleet monitoring. Health, online status, feed counts, and alerts will appear after the feeder is claimed.
+            </p>
+            <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <Link to="/devices/pair" className="btn-primary inline-flex min-h-11 items-center justify-center gap-2"><PlusCircle size={16} /> Pair first device</Link>
+              <span className="rounded-full border border-white/10 bg-slate-950/35 px-3 py-2 text-xs text-slate-400">Waiting for first feeder</span>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    );
+  }
+
   return (
     <motion.div
       initial={shouldReduceMotion ? false : { opacity: 0, y: 18, scale: 0.985 }}
@@ -50,18 +79,17 @@ export function FleetHealth({ total, online, feedsToday, alerts }: FleetHealthPr
               </defs>
             </svg>
             <div className="text-center">
-              <p className="text-3xl font-black tracking-tight text-white">{total ? `${ratio}%` : '—'}</p>
-              <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-cyan-200/80">{total ? 'online' : 'ready'}</p>
+              <p className="text-3xl font-black tracking-tight text-white">{`${ratio}%`}</p>
+              <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-cyan-200/80">online</p>
             </div>
           </div>
 
           <div className="min-w-0">
             <p className="badge-info w-fit">Fleet health</p>
-            <h2 className="mt-3 text-2xl font-black tracking-tight text-white sm:text-3xl">{total ? 'Linked feeder readiness' : 'No feeders linked yet'}</h2>
+            <h2 className="mt-3 text-2xl font-black tracking-tight text-white sm:text-3xl">Linked feeder readiness</h2>
             <p className="mt-2 text-sm leading-6 text-slate-300">
-              {total ? 'A live owner-scoped view using only devices linked to this account. No global command paths are used.' : 'Pair your first device to start fleet monitoring with owner-scoped health, feed, and alert telemetry.'}
+              A live owner-scoped view using only devices linked to this account. No global command paths are used.
             </p>
-            {!total && <Link to="/devices/pair" className="btn-primary mt-4 inline-flex items-center gap-2"><PlusCircle size={16} /> Pair first device</Link>}
           </div>
         </div>
 
@@ -75,7 +103,7 @@ export function FleetHealth({ total, online, feedsToday, alerts }: FleetHealthPr
         <div className="lg:col-span-2">
           <div className="flex items-center justify-between text-xs font-bold uppercase tracking-[0.22em] text-slate-400">
             <span>Online capacity</span>
-            <span>{total ? `${online} active • ${offline} offline` : 'Waiting for first feeder'}</span>
+            <span>{`${online} active • ${offline} offline`}</span>
           </div>
           <div className="mt-3 h-3 overflow-hidden rounded-full border border-white/10 bg-slate-950/60">
             <motion.div

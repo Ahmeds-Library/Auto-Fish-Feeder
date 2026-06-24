@@ -26,6 +26,22 @@ export function MetricCard({ label, value, helper, icon: Icon, delay = 0 }: { la
   );
 }
 
+
+export function IconBubble({ icon: Icon, tone = 'info', className = '' }: { icon: LucideIcon; tone?: 'info' | 'success' | 'warning' | 'danger'; className?: string }) {
+  const classes = {
+    info: 'border-cyan-300/20 bg-cyan-300/10 text-cyan-100',
+    success: 'border-emerald-300/20 bg-emerald-300/10 text-emerald-100',
+    warning: 'border-amber-300/20 bg-amber-300/10 text-amber-100',
+    danger: 'border-rose-300/20 bg-rose-300/10 text-rose-100',
+  };
+
+  return (
+    <span className={`inline-grid h-11 w-11 shrink-0 place-items-center rounded-2xl border ${classes[tone]} ${className}`}>
+      <Icon size={20} />
+    </span>
+  );
+}
+
 export function StatusBadge({ tone = 'info', children }: { tone?: 'success' | 'warning' | 'danger' | 'info'; children: ReactNode }) {
   const classes = {
     success: 'badge-ok',

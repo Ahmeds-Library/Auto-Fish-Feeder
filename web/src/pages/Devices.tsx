@@ -3,14 +3,14 @@ import { Link } from 'react-router-dom';
 import { DeviceCard } from '../components/DeviceCard';
 import { PageTitle } from '../components/Layout';
 import { StaggerGroup } from '../components/motion';
-import { EmptyState, SkeletonCard } from '../components/ui';
+import { AlertMessage, EmptyState, SkeletonCard } from '../components/ui';
 import { useAuth } from '../hooks/useAuth';
 import { useUserDevices } from '../hooks/useUserDevices';
 import { isOnline } from '../lib/format';
 
 export function DevicesPage() {
   const { user } = useAuth();
-  const { devices, loading } = useUserDevices(user?.uid);
+  const { devices, loading, error } = useUserDevices(user?.uid);
   const online = devices.filter((device) => isOnline(device.status?.lastSeen)).length;
   const alerts = devices.filter((device) => Boolean(device.status?.lastError)).length;
 
@@ -36,9 +36,11 @@ export function DevicesPage() {
         </div>
       </div>
 
+      {error && <div className="mb-5"><AlertMessage tone="danger"><b>Could not load your device fleet.</b> {error}</AlertMessage></div>}
+
       {loading ? (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3"><SkeletonCard /><SkeletonCard /><SkeletonCard /></div>
-      ) : devices.length ? (
+      ) : error ? null : devices.length ? (
         <StaggerGroup className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           {devices.map((device) => <DeviceCard key={device.id} device={device} />)}
         </StaggerGroup>

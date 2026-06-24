@@ -5,7 +5,7 @@ import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { PageTitle } from '../components/Layout';
 import { MotionCard, StaggerGroup } from '../components/motion';
-import { AlertMessage } from '../components/ui';
+import { AlertMessage, IconBubble } from '../components/ui';
 import { claimDevice } from '../services/pairingService';
 
 function claimErrorMessage(error: unknown) {
@@ -22,27 +22,27 @@ function claimErrorMessage(error: unknown) {
 const steps = [
   {
     title: 'Power on device',
-    body: 'Power on your Fish Feeder. If it has not been configured before, it will create a setup Wi-Fi network.',
+    body: 'Power on the feeder. New devices start a local setup network automatically.',
     icon: Smartphone,
   },
   {
     title: 'Connect to setup Wi-Fi',
-    body: 'Wi-Fi name: FishFeeder-Setup. Password: setup1234. If the device already has an ID, the network may appear as FishFeeder-FF-XXXXXX.',
+    body: 'Connect your phone or laptop to the feeder setup network.',
     icon: Wifi,
   },
   {
     title: 'Open setup portal',
-    body: 'Open http://192.168.4.1 in your browser. The setup portal asks for home Wi-Fi and shows the Device ID and pairing code.',
+    body: 'Open the local portal to save Wi-Fi, Firebase, and motor settings.',
     icon: Router,
   },
   {
     title: 'Enter code or scan QR',
-    body: 'Enter the Device ID and 6-digit pairing code shown by the device, or open the pairing URL/QR from the setup portal.',
+    body: 'Copy the Device ID and six-digit pairing code from the portal.',
     icon: QrCode,
   },
   {
     title: 'Claim device',
-    body: 'A Cloud Function validates the code, expiry, and current ownership before linking the feeder to your account.',
+    body: 'Claim securely. The Cloud Function validates code, expiry, and ownership.',
     icon: CheckCircle2,
   },
 ];
@@ -104,14 +104,14 @@ export function PairPage() {
               <h2 className="mt-3 text-2xl font-black">From hardware setup to cloud ownership</h2>
               <p className="mt-2 text-sm leading-6 text-slate-300">Follow these steps once per feeder. After claiming, the device is locked to your Firebase user until removed.</p>
             </div>
-            <StaggerGroup className="grid gap-0 md:grid-cols-5">
+            <StaggerGroup className="grid gap-3 p-4 sm:grid-cols-2 xl:grid-cols-3">
               {steps.map((step, index) => {
                 const Icon = step.icon;
                 return (
-                  <motion.article variants={{ hidden: { opacity: 0, y: 14 }, show: { opacity: 1, y: 0 } }} className="border-b border-white/10 p-5 md:border-b-0 md:border-r last:md:border-r-0" key={step.title}>
-                    <div className="mb-4 flex items-center gap-3">
-                      <span className="grid h-10 w-10 place-items-center rounded-2xl bg-cyan-300/15 text-cyan-100 ring-1 ring-cyan-300/20"><Icon size={20} /></span>
-                      <span className="text-xs font-black uppercase tracking-[0.25em] text-cyan-300">0{index + 1}</span>
+                  <motion.article variants={{ hidden: { opacity: 0, y: 14 }, show: { opacity: 1, y: 0 } }} className="rounded-3xl border border-white/10 bg-slate-950/35 p-4" key={step.title}>
+                    <div className="mb-4 flex items-center justify-between gap-3">
+                      <IconBubble icon={Icon} />
+                      <span className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1 text-xs font-black uppercase tracking-[0.2em] text-cyan-200">0{index + 1}</span>
                     </div>
                     <h3 className="font-bold text-white">{step.title}</h3>
                     <p className="mt-2 text-sm leading-6 text-slate-300">{step.body}</p>
